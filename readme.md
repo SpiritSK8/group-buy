@@ -1,4 +1,4 @@
-#Team Name: Splitly
+# Team Name: Splitly
 
 # Proposed LoA: Apollo
 
@@ -176,6 +176,22 @@ We will abstract data access through repositories for entities like deals, users
 [Development Plan](https://docs.google.com/document/d/1maZlSuMO5eH9s_eOv98VZoKOX-usrKVfspF9CuOwc8E/edit?usp=sharing)
 
 # Setup Instructions
+Step 1: Clone this repository using the following command.
+`git clone git@github.com:SpiritSK8/group-buy.git`
 
+Step 2: Open the cloned group-buy folder in VSCode
 
+Step 3: Make a .env file in this directory, and add the following lines:
+`MONGO_URI = mongodb+srv://\<Your MongoDB URI\>
+JWT_SECRET = supersecretkey`
+Please use MongoDB Atlas to create a database and follow the instructions there.
 
+Step 4: Run the server using the following command. Make sure you have Node.js installed and have no other process running on port 3000.
+`node ./backend./server.js`
+You should see the following message:
+`Server running on port 3000
+MongoDB connected`
+If you don't see "MongoDB connected", then please check your MongoDB setup again.
+
+Step 5: Run the app in an Android emulator using the following command. You need to make sure you have an Android emulator available.
+`npx expo start -a`
