@@ -1,11 +1,13 @@
 import React from "react";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Button } from "react-native";
+
+import { useAuth } from "../context/AuthContext";
+
 import Deals from "../screens/(tabs)/Deals";
 import Chats from "../screens/(tabs)/Chats";
 import GroupBuys from "../screens/(tabs)/GroupBuys";
 import Settings from "../screens/(tabs)/Settings";
-import { Button } from "react-native";
-import { useAuth } from "../context/AuthContext";
 
 export type bottomTabsTypes = {
     Deals: any;

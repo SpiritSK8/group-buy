@@ -1,10 +1,9 @@
-import { AuthProvider, useAuth } from './app/context/AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import AuthStack from './app/navigations/AuthStack';
-import AppStack from './app/navigations/AppStack';
 
-const Stack = createNativeStackNavigator();
+import { AuthProvider, useAuth } from './context/AuthContext';
+import AuthStack from './navigations/AuthStack';
+import AppStack from './navigations/AppStack';
 
 export default function App() {
     return (
