@@ -203,5 +203,5 @@ If you don't see "MongoDB connected", then please check your MongoDB setup again
 
 <strong>Step 5</strong>: Run the app in an Android emulator using the following command. You need to make sure you have an Android emulator available.
 ```
-npx expo start -a
+npx expo start ./app -a
 ```
