@@ -1,12 +1,30 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import BottomTabs from "./BottomTabs";
+import React from "react";
+import { Button } from "react-native";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-const Stack = createNativeStackNavigator();
+import { useAuth } from "../context/AuthContext";
 
-const AppStack = () => (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="MainTabs" component={BottomTabs} />
-    </Stack.Navigator>
-);
+import Deals from "../screens/(tabs)/Deals";
+import Chats from "../screens/(tabs)/Chats";
+import GroupBuys from "../screens/(tabs)/GroupBuys";
+import Settings from "../screens/(tabs)/Settings";
 
-export default AppStack;
+const Tab = createBottomTabNavigator();
+
+const AppStack = () => {
+    const { onLogout } = useAuth();
+
+    return (
+        // Right now the sign out button is visible in every page
+        <Tab.Navigator>
+            <Tab.Screen name={'Deals'} component={Deals} />
+            <Tab.Screen name={'GroupBuys'} component={GroupBuys} />
+            <Tab.Screen name={'Chats'} component={Chats} />
+            <Tab.Screen name={'Settings'} component={Settings} options={{
+                headerRight: () => <Button onPress={onLogout} title="Sign Out" />
+            }} />
+        </Tab.Navigator>
+    )
+}
+
+export default AppStack
