@@ -5,6 +5,8 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthStack from './navigations/AuthStack';
 import AppStack from './navigations/AppStack';
 
+import "./global.css";
+
 export default function App() {
     return (
         <AuthProvider>
