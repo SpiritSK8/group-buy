@@ -181,27 +181,24 @@ We will abstract data access through repositories for entities like deals, users
 git clone git@github.com:SpiritSK8/group-buy.git
 ```
 
-<strong>Step 2</strong>: Open the cloned group-buy folder in VSCode
+<strong>Step 2</strong>: Open the cloned group-buy folder in VSCode.
+```
+code <path to cloned folder>
+```
 
-<strong>Step 3</strong>: Make a .env file in this directory, and add the following lines:
+<strong>Step 3</strong>: Open the terminal and navigate to `./app`:
 ```
-MONGO_URI = mongodb+srv://\<Your MongoDB URI\>
-JWT_SECRET = supersecretkey
+cd ./app/
 ```
-Please use MongoDB Atlas to create a database and follow the instructions there.
 
-<strong>Step 4</strong>: Run the server using the following command. Make sure you have Node.js installed and have no other process running on port 3000.
+<strong>Step 4</strong>: Install the required dependencies.
 ```
-node ./backend./server.js
+npm install
 ```
-You should see the following message:
-```
-Server running on port 3000
-MongoDB connected
-```
-If you don't see "MongoDB connected", then please check your MongoDB setup again.
 
-<strong>Step 5</strong>: Run the app in an Android emulator using the following command. You need to make sure you have an Android emulator available.
+<strong>Step 5</strong>: If you don't have an Android emulator, install one by following the instructions <a href="https://docs.expo.dev/workflow/android-studio-emulator/">here</a>.
+
+<strong>Step 6</strong>: Run the app in an Android emulator using the following command.
 ```
 npx expo start ./app -a
 ```
