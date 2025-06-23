@@ -12,8 +12,6 @@ import ChatStack from "./ChatStack";
 const Tab = createBottomTabNavigator();
 
 const AppStack = () => {
-    const { onLogout } = useAuth();
-
     return (
         <Tab.Navigator
             screenOptions={{
@@ -23,11 +21,9 @@ const AppStack = () => {
             <Tab.Screen name='Deals' component={Deals} />
             <Tab.Screen name='GroupBuys' component={GroupBuys} />
             <Tab.Screen name='Chats' component={ChatStack} options={{ headerShown: false }}/>
-            <Tab.Screen name='Settings' component={Settings} options={{
-                headerRight: () => <Button onPress={onLogout} title="Sign Out" />
-            }} />
+            <Tab.Screen name='Settings' component={Settings} />
         </Tab.Navigator>
-    )
-}
+    );
+};
 
-export default AppStack
+export default AppStack;

@@ -1,5 +1,5 @@
-import React from 'react'
-import { View, FlatList } from 'react-native'
+import React from 'react';
+import { View, FlatList } from 'react-native';
 import { useNavigation } from 'expo-router';
 
 import User from './types/User';
@@ -20,7 +20,7 @@ const ChatList = () => {
                 )}
                 keyExtractor={(item) => item.id.toString()} />
         </View>
-    )
-}
+    );
+};
 
-export default ChatList
+export default ChatList;

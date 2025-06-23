@@ -4,4 +4,4 @@ type User = {
     lastChat: String
 };
 
-export default User
+export default User;

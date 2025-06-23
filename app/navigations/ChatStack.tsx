@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import React from 'react'
+import React from 'react';
 
 import ChatList from "../screens/Chat/ChatList";
 import Chat from "../screens/Chat/Chat";
@@ -22,4 +22,4 @@ const ChatStack = () => {
     )
 }
 
-export default ChatStack
+export default ChatStack;
