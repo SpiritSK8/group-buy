@@ -196,9 +196,22 @@ cd ./app/
 npm install
 ```
 
-<strong>Step 5</strong>: If you don't have an Android emulator, install one by following the instructions <a href="https://docs.expo.dev/workflow/android-studio-emulator/">here</a>.
+### Running the app using Android emulator
 
-<strong>Step 6</strong>: Run the app in an Android emulator using the following command.
+<strong>Step 1</strong>: Install an Android emulator. You can install one by following the instructions <a href="https://docs.expo.dev/workflow/android-studio-emulator/">here</a>.
+
+<strong>Step 2</strong>: Run the app using the following command (make sure you are in the `./app/` directory).
 ```
-npx expo start ./app -a
+npx expo start -a
 ```
+
+### Running the app on your Android device
+
+<strong>Step 1</strong>: Install Expo Go from the Play Store in your device.
+
+<strong>Step 2</strong>: Run the app using the following command (make sure you are in the `./app/` directory).
+```
+npx expo start
+```
+
+<strong>Step 3</strong>: Open Expo Go on your device and scan the QR code.
