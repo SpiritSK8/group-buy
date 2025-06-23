@@ -5,6 +5,7 @@ const Chat = ({ route }: { route: any }) => {
     return (
         <View>
             <Text>Chat with {route.params.name}</Text>
+            <Text>Test</Text>
         </View>
     )
 }
