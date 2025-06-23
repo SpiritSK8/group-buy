@@ -200,7 +200,9 @@ npm install
 
 <strong>Step 1</strong>: Install an Android emulator. You can install one by following the instructions <a href="https://docs.expo.dev/workflow/android-studio-emulator/">here</a>.
 
-<strong>Step 2</strong>: Run the app using the following command (make sure you are in the `./app/` directory).
+<strong>Step 2</strong>: Run your Android emulator and enable USB debugging. Follow these <a href="https://developer.android.com/studio/debug/dev-options">instructions</a> to enable USB debugging.
+
+<strong>Step 3</strong>: Run the app using the following command (make sure you are in the `./app/` directory).
 ```
 npx expo start -a
 ```
