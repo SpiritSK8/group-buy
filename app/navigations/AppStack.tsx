@@ -27,7 +27,7 @@ const AppStack = () => {
                 headerRight: () => <Button onPress={onLogout} title="Sign Out" />
             }} />
         </Tab.Navigator>
-    )
-}
+    );
+};
 
-export default AppStack
+export default AppStack;

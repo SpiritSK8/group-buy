@@ -1,5 +1,5 @@
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 
@@ -9,13 +9,11 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const { onLogin } = useAuth();
 
-    const login = async () => {
-        console.log("attempt login");
-        const result = await onLogin!(email, password);
-        console.log(result);
-        if (result && result.error) {
-            alert(result.message);
-            return;
+    async function login() {
+        try {
+            const result = await onLogin!(email, password);
+        } catch (error: any) {
+            alert('Login failed: ' + error.message);
         }
     };
 
@@ -50,8 +48,8 @@ const Login = () => {
                 </Text>
             </TouchableOpacity>
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 20, justifyContent: 'center' },
@@ -60,4 +58,4 @@ const styles = StyleSheet.create({
     button: { marginVertical: 10 },
 });
 
-export default Login
+export default Login;

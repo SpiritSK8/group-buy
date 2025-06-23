@@ -1,5 +1,5 @@
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 
@@ -9,21 +9,20 @@ const Register = () => {
     const [password, setPassword] = useState('');
     const { onLogin, onRegister } = useAuth();
 
-    const login = async () => {
-        const result = await onLogin!(email, password);
-        if (result && result.error) {
-            alert(result.message);
-            return;
+    async function login() {
+        try {
+            const result = await onLogin!(email, password);
+        } catch (error: any) {
+            alert('Login failed: ' + error.message);
         }
     };
 
-    const register = async () => {
-        const result = await onRegister!(email, password);
-        if (result && result.error) {
-            alert(result.message);
-            return;
-        } else {
-            login();
+    async function register() {
+        try {
+            const result = await onRegister!(email, password);
+            login()
+        } catch (error: any) {
+            alert('Register failed: ' + error.message);
         }
     };
 
@@ -52,8 +51,8 @@ const Register = () => {
                 <Button title="Register" onPress={register} />
             </View>
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 20, justifyContent: 'center' },
@@ -62,4 +61,4 @@ const styles = StyleSheet.create({
     button: { marginVertical: 10 },
 });
 
-export default Register
+export default Register;

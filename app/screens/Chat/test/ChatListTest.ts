@@ -73,4 +73,4 @@ const CHAT_LIST_TEST_DATA: User[] = [
     },
 ];
 
-export default CHAT_LIST_TEST_DATA
+export default CHAT_LIST_TEST_DATA;
