@@ -1,12 +1,12 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
 import { auth } from '../firebaseConfig';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, UserCredential } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut, User } from 'firebase/auth';
 
 interface AuthProps {
-    user?: UserCredential | null;
-    onRegister?: (email: string, password: string) => Promise<UserCredential>;
-    onLogin?: (email: string, password: string) => Promise<UserCredential>;
+    user?: User | null;
+    onRegister?: (email: string, password: string) => Promise<User>;
+    onLogin?: (email: string, password: string) => Promise<User>;
     onLogout?: () => Promise<any>;
 }
 
@@ -17,31 +17,30 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: any) => {
-    const [user, setUser] = useState<UserCredential | null>(null);
+    const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        // TODO: Check if user has already been logged in.
-    }, []);
+        const unsubscribe = getAuth().onAuthStateChanged((user) => {
+            console.log("Currently logged in as: " + user?.email);
+            setUser(user);
+        });
+        return unsubscribe;
+    });
 
     async function register(email: string, password: string) {
-        const user = await createUserWithEmailAndPassword(auth, email, password);
+        const user = (await createUserWithEmailAndPassword(auth, email, password)).user;
         setUser(user);
-        // TODO: Store token in persistent storage.
         return user;
     }
 
     async function login(email: string, password: string) {
-        const user = await signInWithEmailAndPassword(auth, email, password);
+        const user = (await signInWithEmailAndPassword(auth, email, password)).user;
         setUser(user);
-        // TODO: Store token in persistent storage.
         return user;
     }
 
     async function logout() {
-        // TODO: Delete token from persistent storage.
-
         await signOut(auth);
-
         setUser(null);
     }
 
