@@ -5,9 +5,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useAuth } from "../context/AuthContext";
 
 import Deals from "../screens/(tabs)/Deals";
-import Chats from "../screens/(tabs)/Chats";
 import GroupBuys from "../screens/(tabs)/GroupBuys";
 import Settings from "../screens/(tabs)/Settings";
+import ChatStack from "./ChatStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -15,12 +15,15 @@ const AppStack = () => {
     const { onLogout } = useAuth();
 
     return (
-        // Right now the sign out button is visible in every page
-        <Tab.Navigator>
-            <Tab.Screen name={'Deals'} component={Deals} />
-            <Tab.Screen name={'GroupBuys'} component={GroupBuys} />
-            <Tab.Screen name={'Chats'} component={Chats} />
-            <Tab.Screen name={'Settings'} component={Settings} options={{
+        <Tab.Navigator
+            screenOptions={{
+                headerStyle: { backgroundColor: '#7766dd', height: 80 },
+            }}
+        >
+            <Tab.Screen name='Deals' component={Deals} />
+            <Tab.Screen name='GroupBuys' component={GroupBuys} />
+            <Tab.Screen name='Chats' component={ChatStack} options={{ headerShown: false }}/>
+            <Tab.Screen name='Settings' component={Settings} options={{
                 headerRight: () => <Button onPress={onLogout} title="Sign Out" />
             }} />
         </Tab.Navigator>

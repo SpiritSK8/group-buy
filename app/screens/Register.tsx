@@ -12,14 +12,16 @@ const Register = () => {
     const login = async () => {
         const result = await onLogin!(email, password);
         if (result && result.error) {
-            alert(result.msg);
+            alert(result.message);
+            return;
         }
     };
 
     const register = async () => {
         const result = await onRegister!(email, password);
         if (result && result.error) {
-            alert(result.msg);
+            alert(result.message);
+            return;
         } else {
             login();
         }

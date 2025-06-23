@@ -10,9 +10,11 @@ const Login = () => {
     const { onLogin } = useAuth();
 
     const login = async () => {
+        console.log("attempt login");
         const result = await onLogin!(email, password);
+        console.log(result);
         if (result && result.error) {
-            alert(result.msg);
+            alert(result.message);
             return;
         }
     };
@@ -43,7 +45,7 @@ const Login = () => {
             </View>
 
             <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                <Text style={{ color: 'blue', marginTop: 16, textAlign: 'center' }}>
+                <Text className='text-blue-500 mt-4 text-center'>
                     Don't have an account? Register here
                 </Text>
             </TouchableOpacity>

@@ -18,7 +18,7 @@ export default function App() {
 }
 
 const RootNavigator = () => {
-    const { authState } = useAuth();
+    const { user } = useAuth();
 
-    return authState?.authenticated ? <AppStack /> : <AuthStack />;
+    return user ? <AppStack /> : <AuthStack />;
 };
