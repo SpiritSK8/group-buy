@@ -50,7 +50,8 @@ const Chat = ({ route }: { route: any }) => {
                 messages={messages}
                 onSend={messages => onSend(messages as any)}
                 user={{
-                    _id: user.uid
+                    _id: user.uid,
+                    avatar: 'https://i.pravatar.cc/300'
                 }}
                 messagesContainerStyle={{
                     backgroundColor: '#fff'

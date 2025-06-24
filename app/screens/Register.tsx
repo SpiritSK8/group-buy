@@ -2,27 +2,40 @@ import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
+import { FirebaseError } from 'firebase/app';
 
 const Register = () => {
     const navigation = useNavigation<any>();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { onLogin, onRegister } = useAuth();
+    const [isLoading, setIsLoading] = useState(false);
 
-    async function login() {
-        try {
-            const result = await onLogin!(email, password);
-        } catch (error: any) {
-            alert('Login failed: ' + error.message);
-        }
-    };
+    const { onRegister } = useAuth();
 
     async function register() {
+        setIsLoading(true);
         try {
-            const result = await onRegister!(email, password);
-            login()
+            await onRegister!(email, password);
         } catch (error: any) {
-            alert('Register failed: ' + error.message);
+            let msg = error.message;
+            if (error instanceof FirebaseError) {
+                console.log(error.code);
+                switch (error.code) {
+                    case 'auth/invalid-email':
+                        msg = "Invalid email.";
+                        break;
+                    case 'auth/missing-password':
+                        msg = "Please provide a password.";
+                        break;
+                    case 'auth/email-already-in-use':
+                        msg = "This email is already in use.";
+                        break;
+                }
+            }
+            alert(msg);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -43,12 +56,13 @@ const Register = () => {
             <TextInput
                 value={password}
                 onChangeText={setPassword}
+                autoCapitalize="none"
                 style={styles.input}
                 secureTextEntry
             />
 
             <View style={{ marginTop: 16 }}>
-                <Button title="Register" onPress={register} />
+                <Button title={isLoading ? 'Loading...' : 'Register'} onPress={isLoading ? () => {} : register} />
             </View>
         </View>
     );

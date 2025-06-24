@@ -2,19 +2,40 @@ import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'rea
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
+import { FirebaseError } from 'firebase/app';
 
 const Login = () => {
     const navigation = useNavigation<any>();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const { onLogin } = useAuth();
 
     async function login() {
+        setIsLoading(true);
         try {
-            const result = await onLogin!(email, password);
+            await onLogin!(email, password);
         } catch (error: any) {
-            alert('Login failed: ' + error.message);
+            let msg = error.message;
+            if (error instanceof FirebaseError) {
+                console.log(error.code);
+                switch (error.code) {
+                    case 'auth/invalid-email':
+                        msg = "Invalid email.";
+                        break;
+                    case 'auth/missing-password':
+                        msg = "Please provide a password.";
+                        break;
+                    case 'auth/invalid-credential':
+                        msg = "Incorrect password.";
+                        break;
+                }
+            }
+            alert(msg);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -35,12 +56,13 @@ const Login = () => {
             <TextInput
                 value={password}
                 onChangeText={setPassword}
+                autoCapitalize={'none'}
                 style={styles.input}
                 secureTextEntry
             />
 
             <View style={{ marginTop: 16 }}>
-                <Button title="Login" onPress={login} />
+                <Button title={isLoading ? 'Loading...' : 'Login'} onPress={isLoading ? () => {} : login} />
             </View>
 
             <TouchableOpacity onPress={() => navigation.navigate('Register')}>
