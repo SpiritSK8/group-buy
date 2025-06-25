@@ -1,12 +1,17 @@
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+
 import { FirebaseError } from 'firebase/app';
 
-const Register = () => {
-    const navigation = useNavigation<any>();
+import { useAuth } from '../context/AuthContext';
+import { RegisterNavigationProp } from '../types/Navigations';
 
+type Props = {
+    navigation: RegisterNavigationProp;
+}
+
+const Register = ({navigation}: Props) => {
+    const [displayName, setDisplayName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -16,7 +21,7 @@ const Register = () => {
     async function register() {
         setIsLoading(true);
         try {
-            await onRegister!(email, password);
+            await onRegister!(displayName, email, password);
         } catch (error: any) {
             let msg = error.message;
             if (error instanceof FirebaseError) {
@@ -42,6 +47,13 @@ const Register = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Register</Text>
+
+            <Text>Display Name</Text>
+            <TextInput
+                value={displayName}
+                onChangeText={setDisplayName}
+                style={styles.input}
+            />
 
             <Text>Email</Text>
             <TextInput

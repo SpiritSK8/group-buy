@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 
-import User from '../types/User';
+import User from '../../../types/User';
 
 const UserCard = ({ user, onPress }: { user: User, onPress?: any }) => {
     return (

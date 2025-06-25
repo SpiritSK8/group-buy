@@ -1,11 +1,12 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
-import { auth } from '../firebaseConfig';
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut, User } from 'firebase/auth';
+import { getAuth, User } from 'firebase/auth';
+
+import FirebaseServices from '../services/FirebaseServices';
 
 interface AuthProps {
     user?: User | null;
-    onRegister?: (email: string, password: string) => Promise<User>;
+    onRegister?: (displayName: string, email: string, password: string) => Promise<User>;
     onLogin?: (email: string, password: string) => Promise<User>;
     onLogout?: () => Promise<any>;
 }
@@ -25,22 +26,22 @@ export const AuthProvider = ({ children }: any) => {
             setUser(user);
         });
         return unsubscribe;
-    });
+    }, []);
 
-    async function register(email: string, password: string) {
-        const user = (await createUserWithEmailAndPassword(auth, email, password)).user;
+    async function register(displayName: string, email: string, password: string) {
+        const user = await FirebaseServices.register(displayName, email, password);
         setUser(user);
         return user;
     }
 
     async function login(email: string, password: string) {
-        const user = (await signInWithEmailAndPassword(auth, email, password)).user;
+        const user = await FirebaseServices.login(email, password);
         setUser(user);
         return user;
     }
 
     async function logout() {
-        await signOut(auth);
+        await FirebaseServices.logout();
         setUser(null);
     }
 

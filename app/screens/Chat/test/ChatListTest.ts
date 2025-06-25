@@ -1,4 +1,4 @@
-import User from "../types/User";
+import User from "../../../types/User";
 
 const CHAT_LIST_TEST_DATA: User[] = [
     {

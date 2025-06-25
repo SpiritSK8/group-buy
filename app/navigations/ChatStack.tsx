@@ -4,8 +4,9 @@ import React from 'react';
 
 import ChatList from "../screens/Chat/ChatList";
 import Chat from "../screens/Chat/Chat";
+import { ChatStackParamList } from "../types/Navigations";
 
-const Stack = createNativeStackNavigator<any>();
+const Stack = createNativeStackNavigator<ChatStackParamList>();
 
 const ChatStack = () => {
     return (
