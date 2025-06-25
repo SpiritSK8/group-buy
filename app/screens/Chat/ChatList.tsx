@@ -1,22 +1,24 @@
 import React from 'react';
 import { View, FlatList } from 'react-native';
-import { useNavigation } from 'expo-router';
 
-import User from './types/User';
+import User from '../../types/User';
 import UserCard from './components/UserCard';
 
 // TODO: Remove test data.
 import CHAT_LIST_TEST_DATA from './test/ChatListTest';
+import { ChatListNavigationProp } from '../../types/Navigations';
 
-const ChatList = () => {
-    const navigation = useNavigation<any>();
+type Props = {
+    navigation: ChatListNavigationProp;
+}
 
+const ChatList = ({ navigation }: Props) => {
     return (
         <View className='w-full'>
             <FlatList
                 data={CHAT_LIST_TEST_DATA}
                 renderItem={({ item }: { item: User }) => (
-                    <UserCard user={item} onPress={() => navigation.navigate('Chat', { name: item.name })}></UserCard>
+                    <UserCard user={item} onPress={() => navigation.navigate('Chat', { uid: item.name })}></UserCard>
                 )}
                 keyExtractor={(item) => item.id.toString()} />
         </View>

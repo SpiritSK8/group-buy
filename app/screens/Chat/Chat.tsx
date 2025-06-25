@@ -7,16 +7,21 @@ import { database } from '../../firebaseConfig';
 import { GiftedChat } from 'react-native-gifted-chat';
 
 import { useAuth } from '../../context/AuthContext';
-import { useNavigation } from 'expo-router';
+import { ChatNavigationProp, ChatRouteProp } from '../../types/Navigations';
 
-const Chat = ({ route }: { route: any }) => {
+type Props = {
+    navigation: ChatNavigationProp;
+    route: ChatRouteProp;
+};
+
+const Chat = ({ navigation, route }: Props) => {
     const [messages, setMessages] = useState<any>([]);
-
-    const navigation = useNavigation();
 
     const { user } = useAuth();
 
     useLayoutEffect(() => {
+        console.log("Opening chat with: " + route.params.uid);
+
         const collectionRef = collection(database, 'chats');
         const q = query(collectionRef, orderBy('createdAt', 'desc'));
 
@@ -30,7 +35,7 @@ const Chat = ({ route }: { route: any }) => {
              * 1. When the message is first sent (createdAt is still null).
              * 2. When the database populates the createdAt field with the server time.
              * 
-             * We don't want to display messages whose createdAt is still null, so we filter it out.
+             * We don't want to display messages whose createdAt is still null, so we filter them out.
              */
             setMessages(
                 snapshot.docs.map(doc => {
