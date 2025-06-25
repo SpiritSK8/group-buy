@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Deals from '../screens/(tabs)/Deals';
-import DealContributionForm from '../screens/DealContributionForm';
+import Deals from '../screens/Deals/Deals';
+import DealContributionForm from '../screens/Deals/DealContributionForm';
 
 const Stack = createNativeStackNavigator();
 
