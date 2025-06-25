@@ -30,7 +30,7 @@ const Chat = ({ route }: { route: any }) => {
              * 1. When the message is first sent (createdAt is still null).
              * 2. When the database populates the createdAt field with the server time.
              * 
-             * We don't want to display messages in whose createdAt is still null, so we filter it out.
+             * We don't want to display messages whose createdAt is still null, so we filter it out.
              */
             setMessages(
                 snapshot.docs.map(doc => {
