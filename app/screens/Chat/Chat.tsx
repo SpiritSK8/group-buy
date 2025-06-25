@@ -1,8 +1,8 @@
-import { View, Text, TouchableOpacity } from 'react-native';
-import React, { useState, useCallback, useEffect, useLayoutEffect } from 'react';
+import { View, Text } from 'react-native';
+import React, { useState, useCallback, useLayoutEffect } from 'react';
 
 import { collection, addDoc, orderBy, query, onSnapshot, serverTimestamp } from 'firebase/firestore';
-import { auth, database } from '../../firebaseConfig';
+import { database } from '../../firebaseConfig';
 
 import { GiftedChat } from 'react-native-gifted-chat';
 
@@ -11,7 +11,6 @@ import { useNavigation } from 'expo-router';
 
 const Chat = ({ route }: { route: any }) => {
     const [messages, setMessages] = useState<any>([]);
-    const [pendingMessages, setPendingMessages] = useState<any[]>([]);
 
     const navigation = useNavigation();
 
@@ -19,11 +18,20 @@ const Chat = ({ route }: { route: any }) => {
 
     useLayoutEffect(() => {
         const collectionRef = collection(database, 'chats');
-        const q = query(collectionRef, orderBy('createdAt', 'desc'),);
+        const q = query(collectionRef, orderBy('createdAt', 'desc'));
 
         const unsubscribe = onSnapshot(q, snapshot => {
-            // When a message is sent to the server, its createdAt field will be null.
-            // We don't want to display these yet, so we filter out messages which have no createdAt value.
+            /**
+             * To prevent cheating time (e.g. creating a message whose time is set in the future), the message is first sent
+             * without a createdAt value, but a method is attached (serverTimestamp()) that tells the database to populate the createdAt
+             * field with the server's time after it receives the message.
+             * 
+             * This snapshot listener detects for changes in the chats database. So, upon sending a message, it fires 2 times:
+             * 1. When the message is first sent (createdAt is still null).
+             * 2. When the database populates the createdAt field with the server time.
+             * 
+             * We don't want to display messages in whose createdAt is still null, so we filter it out.
+             */
             setMessages(
                 snapshot.docs.map(doc => {
                     const data = doc.data();
@@ -38,20 +46,16 @@ const Chat = ({ route }: { route: any }) => {
                     };
                 }).filter(doc => doc != null) // Filters out nulls.
             );
-
-            // We store new messages in pendingMessages.
-            // These are messages which have been sent to the server, but the server hasn't processed the timestamp yet.
-            setPendingMessages(prev =>
-                // Filter out any pending messages that now exist in Firestore.
-                prev.filter(pm => !messages.some((m: any) => m._id === pm._id))
-            );
         });
 
         return unsubscribe;
     }, []);
 
     const onSend = useCallback((newMessages = []) => {
+        // First item in newMessages is the message that's just been sent.
         const { _id, text, user } = newMessages[0];
+
+        // We add this to the database.
         addDoc(collection(database, 'chats'),
             {
                 _id,
@@ -70,11 +74,11 @@ const Chat = ({ route }: { route: any }) => {
     } else {
         return (
             <GiftedChat
-                messages={GiftedChat.append(messages, pendingMessages)}
+                messages={GiftedChat.append([], messages)}
                 onSend={(messages: any) => onSend(messages)}
                 user={{
                     _id: user.uid,
-                    avatar: 'https://i.pravatar.cc/300'
+                    avatar: 'https://i.pravatar.cc/300' // TODO: Change with actual user's profile picture.
                 }}
                 messagesContainerStyle={{
                     backgroundColor: '#fff'
