@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }: any) => {
             setUser(user);
         });
         return unsubscribe;
-    });
+    }, []);
 
     async function register(email: string, password: string) {
         const user = (await createUserWithEmailAndPassword(auth, email, password)).user;
