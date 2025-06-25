@@ -11,6 +11,7 @@ type Props = {
 }
 
 const Register = ({navigation}: Props) => {
+    const [displayName, setDisplayName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +21,7 @@ const Register = ({navigation}: Props) => {
     async function register() {
         setIsLoading(true);
         try {
-            await onRegister!(email, password);
+            await onRegister!(displayName, email, password);
         } catch (error: any) {
             let msg = error.message;
             if (error instanceof FirebaseError) {
@@ -46,6 +47,13 @@ const Register = ({navigation}: Props) => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Register</Text>
+
+            <Text>Display Name</Text>
+            <TextInput
+                value={displayName}
+                onChangeText={setDisplayName}
+                style={styles.input}
+            />
 
             <Text>Email</Text>
             <TextInput
