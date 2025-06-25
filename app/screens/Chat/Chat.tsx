@@ -1,13 +1,15 @@
 import { View, Text } from 'react-native';
-import React, { useState, useCallback, useLayoutEffect } from 'react';
+import React, { useState, useCallback, useLayoutEffect, useEffect } from 'react';
 
-import { collection, addDoc, orderBy, query, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, orderBy, query, onSnapshot, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { database } from '../../firebaseConfig';
 
-import { GiftedChat } from 'react-native-gifted-chat';
+import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 
 import { useAuth } from '../../context/AuthContext';
 import { ChatNavigationProp, ChatRouteProp } from '../../types/Navigations';
+import FirebaseServices from '../../services/FirebaseServices';
+import { ChatMessage } from '../../types/ChatTypes';
 
 type Props = {
     navigation: ChatNavigationProp;
@@ -15,17 +17,18 @@ type Props = {
 };
 
 const Chat = ({ navigation, route }: Props) => {
-    const [messages, setMessages] = useState<any>([]);
+    const [messages, setMessages] = useState<IMessage[]>([]);
 
     const { user } = useAuth();
 
+    const receiverUID = route.params.uid;
+
     useLayoutEffect(() => {
-        console.log("Opening chat with: " + route.params.uid);
+        console.log("Opening chat with: " + receiverUID);
 
-        const collectionRef = collection(database, 'chats');
-        const q = query(collectionRef, orderBy('createdAt', 'desc'));
+        const q = query(collection(database, 'chats', receiverUID, 'messages'), orderBy('createdAt', 'desc'));
 
-        const unsubscribe = onSnapshot(q, snapshot => {
+        const unsubscribe = onSnapshot(q, async snapshot => {
             /**
              * To prevent cheating time (e.g. creating a message whose time is set in the future), the message is first sent
              * without a createdAt value, but a method is attached (serverTimestamp()) that tells the database to populate the createdAt
@@ -37,37 +40,50 @@ const Chat = ({ navigation, route }: Props) => {
              * 
              * We don't want to display messages whose createdAt is still null, so we filter them out.
              */
-            setMessages(
-                snapshot.docs.map(doc => {
+            const messages = await Promise.all(
+                // TODO: Cache the user's display name and profile pictures.
+                snapshot.docs.map(async doc => {
                     const data = doc.data();
 
                     if (!data.createdAt) return null; // Ignore messages whose timestamp is still pending.
 
-                    return {
+                    const message: IMessage = {
                         _id: doc.id,
                         createdAt: data.createdAt.toDate(),
                         text: data.text,
-                        user: data.user
-                    };
-                }).filter(doc => doc != null) // Filters out nulls.
+                        user: {
+                            _id: data.senderUID,
+                            name: await FirebaseServices.getUserDisplayName(data.senderUID),
+                            avatar: await FirebaseServices.getUserPhotoURL(data.senderUID),
+                        }
+                    }
+
+                    return message;
+                })
+            );
+
+            setMessages(
+                messages.filter(doc => doc != null) // Filters out nulls.
             );
         });
 
         return unsubscribe;
     }, []);
 
-    const onSend = useCallback((newMessages = []) => {
+    const onSend = useCallback((newMessages: IMessage[] = []) => {
         // First item in newMessages is the message that's just been sent.
+        // Note: This user is not the same as the user from useAuth().
+        // This one refers to the user property of GiftedChat's messages.
         const { _id, text, user } = newMessages[0];
 
+        const messageToSend: ChatMessage = {
+            _id,
+            createdAt: (serverTimestamp() as Timestamp),
+            text,
+            senderUID: user._id
+        }
         // We add this to the database.
-        addDoc(collection(database, 'chats'),
-            {
-                _id,
-                createdAt: serverTimestamp(),
-                text,
-                user
-            });
+        addDoc(collection(database, 'chats', receiverUID, 'messages'), messageToSend);
     }, []);
 
     if (!user?.uid) {
@@ -82,12 +98,12 @@ const Chat = ({ navigation, route }: Props) => {
                 messages={GiftedChat.append([], messages)}
                 onSend={(messages: any) => onSend(messages)}
                 user={{
-                    _id: user.uid,
-                    avatar: 'https://i.pravatar.cc/300' // TODO: Change with actual user's profile picture.
+                    _id: user.uid
                 }}
                 messagesContainerStyle={{
                     backgroundColor: '#fff'
                 }}
+                renderUsernameOnMessage={true}
             />
         );
     }
