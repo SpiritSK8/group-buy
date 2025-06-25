@@ -1,201 +1,30 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
 import { Deal } from '../../types/Deal';
 import { calculateSavings } from '../../utils/calculateSavings';
+import { DealCard } from './components/DealCard';
+import { MOCK_DEALS } from './test/DealsTest';
+import { DealsHomeNavigationProp } from '../../types/Navigations';
 
+const Deals = ({ navigation }: { navigation: DealsHomeNavigationProp }) => {
+    const mockDeals: Deal[] = MOCK_DEALS
 
-type DealsStackParamList = {
-  DealContributionForm: { deal: Deal };
-};
+    const topSavingsDeals = [...mockDeals].sort(
+        (a, b) => calculateSavings(b) - calculateSavings(a)
+    );
 
-type NavigationProp = NativeStackNavigationProp<DealsStackParamList, 'DealContributionForm'>;
+    return (
+        <ScrollView className="bg-gray-100 p-4">
+            <Text className="text-2xl font-bold mt-6 mb-2">💰 Top Savings</Text>
 
-const Deals = () => {
-  const navigation = useNavigation<NavigationProp>();
-
-  const mockDeals: Deal[] = [
-    {
-      dealID: 'D001',
-      dealName: 'Buy 2 Bottles Get 1 Free Water',
-      dealStart: '2025-06-01',
-      dealExpiry: '2025-07-01',
-      dealStore: 'FairPrice',
-      dealUrl: 'https://www.fairprice.com.sg/product/water-bottle-pack',
-      isActive: true,
-      itemName: 'Mineral Water',
-      itemOrigPrice: 2.5,
-      dealType: 'buyXGetY',
-      itemReq: 2,
-      itemFree: 1,
-    },
-    {
-      dealID: 'D002',
-      dealName: 'Buy 3 Snacks for 10% Off',
-      dealStart: '2025-06-10',
-      dealExpiry: '2025-07-10',
-      dealStore: 'Cold Storage',
-      dealUrl: 'https://www.coldstorage.com.sg/snack-bundle',
-      isActive: true,
-      itemName: 'Potato Chips',
-      itemOrigPrice: 3.0,
-      dealType: 'minItemPurchase',
-      minPurchase: 3,
-      totalItems: 3,
-      discount: 10,
-    },
-    {
-      dealID: 'D003',
-      dealName: 'Ice Cream Party Pack',
-      dealStart: '2025-06-15',
-      dealExpiry: '2025-07-15',
-      dealStore: 'FairPrice Xtra',
-      dealUrl: 'https://www.fairprice.com.sg/product/ice-cream-party-pack',
-      isActive: true,
-      itemName: 'Ice Cream',
-      itemOrigPrice: 6.0,
-      dealType: 'packageDeal',
-      itemQuantityReq: 3,
-      itemTotalPrice: 15.0,
-    },
-    {
-      dealID: 'D004',
-      dealName: 'Buy 4 Cans Get 2 Free',
-      dealStart: '2025-06-05',
-      dealExpiry: '2025-08-01',
-      dealStore: 'Giant',
-      dealUrl: 'https://www.giant.sg/soft-drinks-deal',
-      isActive: true,
-      itemName: 'Soft Drink',
-      itemOrigPrice: 1.8,
-      dealType: 'buyXGetY',
-      itemReq: 4,
-      itemFree: 2,
-    },
-    {
-      dealID: 'D005',
-      dealName: 'Buy 5 for 20% Off',
-      dealStart: '2025-06-20',
-      dealExpiry: '2025-07-20',
-      dealStore: 'Sheng Siong',
-      dealUrl: 'https://www.shengsiong.com.sg/cookies-deal',
-      isActive: true,
-      itemName: 'Cookies',
-      itemOrigPrice: 4.0,
-      dealType: 'minItemPurchase',
-      minPurchase: 5,
-      totalItems: 5,
-      discount: 20,
-    },
-    {
-      dealID: 'D006',
-      dealName: 'Noodle Pack Bundle Deal',
-      dealStart: '2025-06-18',
-      dealExpiry: '2025-07-30',
-      dealStore: 'Don Don Donki',
-      dealUrl: 'https://www.dondondonki.sg/noodle-pack',
-      isActive: true,
-      itemName: 'Instant Noodles',
-      itemOrigPrice: 1.5,
-      dealType: 'packageDeal',
-      itemQuantityReq: 10,
-      itemTotalPrice: 12.0,
-    },
-    {
-      dealID: 'D007',
-      dealName: 'Buy 1 Get 1 Free Toothbrush',
-      dealStart: '2025-06-22',
-      dealExpiry: '2025-08-01',
-      dealStore: 'Watsons',
-      dealUrl: 'https://www.watsons.com.sg/toothbrush-bogo',
-      isActive: true,
-      itemName: 'Toothbrush',
-      itemOrigPrice: 3.5,
-      dealType: 'buyXGetY',
-      itemReq: 1,
-      itemFree: 1,
-    },
-    {
-      dealID: 'D008',
-      dealName: 'Buy 6 for 15% Off Detergent',
-      dealStart: '2025-06-25',
-      dealExpiry: '2025-07-25',
-      dealStore: 'NTUC',
-      dealUrl: 'https://www.fairprice.com.sg/product/detergent-bundle',
-      isActive: true,
-      itemName: 'Laundry Detergent',
-      itemOrigPrice: 8.0,
-      dealType: 'minItemPurchase',
-      minPurchase: 6,
-      totalItems: 6,
-      discount: 15,
-    },
-    {
-      dealID: 'D009',
-      dealName: 'Breakfast Combo Pack',
-      dealStart: '2025-06-01',
-      dealExpiry: '2025-07-31',
-      dealStore: 'Marketplace',
-      dealUrl: 'https://www.marketplace.com.sg/breakfast-pack',
-      isActive: true,
-      itemName: 'Breakfast Cereal',
-      itemOrigPrice: 5.5,
-      dealType: 'packageDeal',
-      itemQuantityReq: 4,
-      itemTotalPrice: 18.0,
-    },
-    {
-      dealID: 'D010',
-      dealName: 'Buy 2 Shampoo Get 1 Free Conditioner',
-      dealStart: '2025-06-12',
-      dealExpiry: '2025-08-12',
-      dealStore: 'Guardian',
-      dealUrl: 'https://www.guardian.com.sg/haircare-bundle',
-      isActive: true,
-      itemName: 'Shampoo',
-      itemOrigPrice: 7.5,
-      dealType: 'buyXGetY',
-      itemReq: 2,
-      itemFree: 1,
-    },
-  ];
-
-  const topSavingsDeals = [...mockDeals].sort(
-    (a, b) => calculateSavings(b) - calculateSavings(a)
-  );
-
-  return (
-    <ScrollView className="bg-gray-100 p-4">
-      <Text className="text-2xl font-bold mt-6 mb-2">💰 Top Savings</Text>
-
-      {topSavingsDeals.map(deal => (
-        <TouchableOpacity
-          key={deal.dealID}
-          onPress={() => navigation.navigate('DealContributionForm', { deal })}
-        >
-          <View className="bg-white rounded-xl p-4 mb-4 shadow">
-            <Text className="text-xl font-bold">{deal.dealName}</Text>
-            <Text className="text-sm text-gray-600">{deal.itemName}</Text>
-
-            <Text className="text-green-700 font-semibold">
-              Save {calculateSavings(deal).toLocaleString()} SGD
-            </Text>
-
-            {deal.itemOrigPrice && (
-              <Text className="text-sm text-gray-500 line-through">
-                {deal.itemOrigPrice.toLocaleString()} SGD
-              </Text>
-            )}
-
-            <Text className="text-sm text-blue-500">
-              📍 {deal.dealStore}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
-  );
+            {topSavingsDeals.map(deal => (
+                <DealCard deal={deal} onPress={() => navigation.navigate('DealContributionForm', { deal })} />
+            ))}
+        </ScrollView>
+    );
 };
 
 export default Deals;

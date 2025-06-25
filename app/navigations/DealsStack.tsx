@@ -2,8 +2,9 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Deals from '../screens/Deals/Deals';
 import DealContributionForm from '../screens/Deals/DealContributionForm';
+import { DealStackParamList } from '../types/Navigations';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<DealStackParamList>();
 
 const DealsStack = () => {
   return (

@@ -1,10 +1,11 @@
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteProp } from "@react-navigation/native";
+import { Deal } from "./Deal";
 
 // ---------------- AuthStack ----------------
 export type AuthStackParamList = {
-  Login: undefined,
-  Register: undefined;
+    Login: undefined,
+    Register: undefined;
 };
 
 export type LoginNavigationProp = NativeStackNavigationProp<
@@ -19,8 +20,8 @@ export type RegisterNavigationProp = NativeStackNavigationProp<
 
 // ---------------- ChatStack ----------------
 export type ChatStackParamList = {
-  ChatList: undefined,
-  Chat: { uid: string }; 
+    ChatList: undefined,
+    Chat: { uid: string };
 };
 
 export type ChatListNavigationProp = NativeStackNavigationProp<
@@ -34,3 +35,24 @@ export type ChatNavigationProp = NativeStackNavigationProp<
 >;
 
 export type ChatRouteProp = RouteProp<ChatStackParamList, 'Chat'>;
+
+// ---------------- DealStack ----------------
+export type DealStackParamList = {
+    DealsHome: undefined,
+    DealContributionForm: { deal: Deal };
+}
+
+export type DealsHomeNavigationProp = NativeStackNavigationProp<
+    DealStackParamList,
+    'DealsHome'
+>;
+
+export type DealContributionFormNavigationProp = NativeStackNavigationProp<
+    DealStackParamList,
+    'DealContributionForm'
+>;
+
+export type DealContributionFormRouteProp = RouteProp<
+    DealStackParamList,
+    'DealContributionForm'
+>;
