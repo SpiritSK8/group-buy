@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { useAuth } from "../context/AuthContext";
 
-import Deals from "../screens/(tabs)/Deals";
+import DealsStack from "../navigations/DealsStack";
 import GroupBuys from "../screens/(tabs)/GroupBuys";
 import Settings from "../screens/(tabs)/Settings";
 import ChatStack from "./ChatStack";
@@ -18,7 +18,7 @@ const AppStack = () => {
                 headerStyle: { backgroundColor: '#7766dd', height: 80 },
             }}
         >
-            <Tab.Screen name='Deals' component={Deals} />
+            <Tab.Screen name='Deals' component={DealsStack} />
             <Tab.Screen name='GroupBuys' component={GroupBuys} />
             <Tab.Screen name='Chats' component={ChatStack} options={{ headerShown: false }}/>
             <Tab.Screen name='Settings' component={Settings} />

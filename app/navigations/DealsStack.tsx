@@ -1,0 +1,17 @@
+import React from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Deals from '../screens/(tabs)/Deals';
+import DealContributionForm from '../screens/DealContributionForm';
+
+const Stack = createNativeStackNavigator();
+
+const DealsStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="DealsHome" component={Deals} options={{ title: "Deals" }} />
+      <Stack.Screen name="DealContributionForm" component={DealContributionForm} options={{ title: "Contribute to Deal" }} />
+    </Stack.Navigator>
+  );
+};
+
+export default DealsStack;
