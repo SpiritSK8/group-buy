@@ -1,12 +1,17 @@
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+
 import { FirebaseError } from 'firebase/app';
 
-const Login = () => {
-    const navigation = useNavigation<any>();
+import { useAuth } from '../context/AuthContext';
+import { LoginNavigationProp } from '../types/Navigations';
 
+type Props = {
+    navigation: LoginNavigationProp;
+}
+
+const Login = ({navigation}: Props) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);

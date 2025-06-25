@@ -1,12 +1,16 @@
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+
 import { FirebaseError } from 'firebase/app';
 
-const Register = () => {
-    const navigation = useNavigation<any>();
+import { useAuth } from '../context/AuthContext';
+import { RegisterNavigationProp } from '../types/Navigations';
 
+type Props = {
+    navigation: RegisterNavigationProp;
+}
+
+const Register = ({navigation}: Props) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
