@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 
 import User from '../../../types/User';
 
-const UserCard = ({ user, onPress }: { user: User, onPress?: any }) => {
+const UserCard = ({ user, onPress }: { user: User, onPress?: () => void}) => {
     return (
         <TouchableOpacity className='w-full p-4 border-b border-gray-300' onPress={onPress}>
             <View className='flex-row'>
