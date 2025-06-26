@@ -2,6 +2,14 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteProp } from "@react-navigation/native";
 import { Deal } from "./Deal";
 
+// ---------------- AppStack ----------------
+export type AppStackParamList = {
+    Deals: undefined,
+    GroupBuys: undefined;
+    Chats: undefined;
+    Settings: undefined;
+};
+
 // ---------------- AuthStack ----------------
 export type AuthStackParamList = {
     Login: undefined,
