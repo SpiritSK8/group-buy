@@ -1,15 +1,10 @@
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
-import React, { useState, useCallback, useLayoutEffect, useEffect } from 'react';
-
-import { collection, addDoc, orderBy, query, onSnapshot, serverTimestamp, Timestamp } from 'firebase/firestore';
-import { database } from '../../firebaseConfig';
+import React, { useState, useCallback, useLayoutEffect } from 'react';
 
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 
 import { useAuth } from '../../context/AuthContext';
 import { ChatNavigationProp, ChatRouteProp } from '../../types/Navigations';
-import FirebaseServices from '../../services/FirebaseServices';
-import { ChatMessage } from '../../types/ChatTypes';
 import ChatServices from '../../services/ChatServices';
 
 type Props = {

@@ -1,9 +1,10 @@
 import { addDoc, collection, doc, DocumentData, getDoc, onSnapshot, orderBy, query, QuerySnapshot, serverTimestamp, setDoc, Timestamp, Unsubscribe } from 'firebase/firestore';
-import { auth, database } from '../firebaseConfig';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, User } from 'firebase/auth';
-import { ChatMessage } from '../types/ChatTypes';
+import { database } from '../firebaseConfig';
 import FirebaseServices from './FirebaseServices';
+
 import { IMessage } from 'react-native-gifted-chat';
+
+import { ChatMessage } from '../types/ChatTypes';
 
 class ChatServices {
     // Creates a chat room and returns the id of the chat room.
