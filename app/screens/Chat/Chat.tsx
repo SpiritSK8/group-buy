@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import React, { useState, useCallback, useLayoutEffect, useEffect } from 'react';
 
 import { collection, addDoc, orderBy, query, onSnapshot, serverTimestamp, Timestamp } from 'firebase/firestore';
@@ -10,6 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 import { ChatNavigationProp, ChatRouteProp } from '../../types/Navigations';
 import FirebaseServices from '../../services/FirebaseServices';
 import { ChatMessage } from '../../types/ChatTypes';
+import ChatServices from '../../services/ChatServices';
 
 type Props = {
     navigation: ChatNavigationProp;
@@ -21,7 +22,7 @@ const Chat = ({ navigation, route }: Props) => {
 
     const { user } = useAuth();
 
-    const chatRoomId = route.params.chatRoomId;
+    const chatRoomId: string = route.params.chatRoomId;
 
     useLayoutEffect(() => {
         console.log("Opening chat with: " + chatRoomId);
@@ -65,31 +66,24 @@ const Chat = ({ navigation, route }: Props) => {
             setMessages(
                 messages.filter(doc => doc != null) // Filters out nulls.
             );
-        });
+        },
+            (error) => {
+                if (error.code === 'permission-denied') {
+                    console.error('You do not have permission to view messages in this chat room.');
+                }
+            }
+        );
 
         return unsubscribe;
     }, []);
 
-    const onSend = useCallback(async (messages: IMessage[] = []) => {
-        // First item in newMessages is the message that's just been sent.
-        const message = messages[0];
-        const messageToSend: ChatMessage = {
-            _id: message._id,
-            createdAt: (serverTimestamp() as Timestamp),
-            text: message.text,
-            senderUid: message.user._id
-        }
-
-        try {
-            await addDoc(
-                collection(database, 'chats', chatRoomId, 'messages'),
-                messageToSend
-            );
-            console.log('Message sent successfully');
-        } catch (error) {
-            console.error('Failed to send message:', error);
-        }
-    }, []);
+    const onSend = useCallback((message: IMessage) => {
+        ChatServices.sendMessage(
+            message._id.toString(),
+            message.text,
+            message.user._id.toString(),
+            chatRoomId);
+    }, [chatRoomId]);
 
     if (!user?.uid) {
         return (
@@ -101,7 +95,7 @@ const Chat = ({ navigation, route }: Props) => {
         return (
             <GiftedChat
                 messages={GiftedChat.append([], messages)}
-                onSend={(messages: IMessage[]) => onSend(messages)}
+                onSend={(messages: IMessage[]) => onSend(messages[0])}
                 user={{
                     _id: user.uid
                 }}
