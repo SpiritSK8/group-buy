@@ -3,7 +3,7 @@ import { Timestamp } from "firebase/firestore";
 export interface ChatMessage {
     _id: string | number;
     text: string;
-    senderUID: string | number;
+    senderUid: string | number;
     createdAt: Timestamp;
 }
 

@@ -21,12 +21,12 @@ const Chat = ({ navigation, route }: Props) => {
 
     const { user } = useAuth();
 
-    const receiverUID = route.params.uid;
+    const chatRoomId = route.params.chatRoomId;
 
     useLayoutEffect(() => {
-        console.log("Opening chat with: " + receiverUID);
+        console.log("Opening chat with: " + chatRoomId);
 
-        const q = query(collection(database, 'chats', receiverUID, 'messages'), orderBy('createdAt', 'desc'));
+        const q = query(collection(database, 'chats', chatRoomId, 'messages'), orderBy('createdAt', 'desc'));
 
         const unsubscribe = onSnapshot(q, async snapshot => {
             /**
@@ -52,9 +52,9 @@ const Chat = ({ navigation, route }: Props) => {
                         createdAt: data.createdAt.toDate(),
                         text: data.text,
                         user: {
-                            _id: data.senderUID,
-                            name: await FirebaseServices.getUserDisplayName(data.senderUID),
-                            avatar: await FirebaseServices.getUserPhotoURL(data.senderUID),
+                            _id: data.senderUid,
+                            name: await FirebaseServices.getUserDisplayName(data.senderUid),
+                            avatar: await FirebaseServices.getUserPhotoURL(data.senderUid),
                         }
                     }
 
@@ -70,20 +70,17 @@ const Chat = ({ navigation, route }: Props) => {
         return unsubscribe;
     }, []);
 
-    const onSend = useCallback((newMessages: IMessage[] = []) => {
+    const onSend = useCallback((messages: IMessage[] = []) => {
         // First item in newMessages is the message that's just been sent.
-        // Note: This user is not the same as the user from useAuth().
-        // This one refers to the user property of GiftedChat's messages.
-        const { _id, text, user } = newMessages[0];
-
+        const message = messages[0];
         const messageToSend: ChatMessage = {
-            _id,
+            _id: message._id,
             createdAt: (serverTimestamp() as Timestamp),
-            text,
-            senderUID: user._id
+            text: message.text,
+            senderUid: message.user._id
         }
         // We add this to the database.
-        addDoc(collection(database, 'chats', receiverUID, 'messages'), messageToSend);
+        addDoc(collection(database, 'chats', chatRoomId, 'messages'), messageToSend);
     }, []);
 
     if (!user?.uid) {
@@ -96,7 +93,7 @@ const Chat = ({ navigation, route }: Props) => {
         return (
             <GiftedChat
                 messages={GiftedChat.append([], messages)}
-                onSend={(messages: any) => onSend(messages)}
+                onSend={(messages: IMessage[]) => onSend(messages)}
                 user={{
                     _id: user.uid
                 }}
