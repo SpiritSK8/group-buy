@@ -1,6 +1,6 @@
 import { addDoc, collection, doc, DocumentData, getDoc, onSnapshot, orderBy, query, QuerySnapshot, serverTimestamp, setDoc, Timestamp, Unsubscribe } from 'firebase/firestore';
 import { database } from '../firebaseConfig';
-import FirebaseServices from './FirebaseServices';
+import UserServices from './UserServices';
 
 import { IMessage } from 'react-native-gifted-chat';
 
@@ -98,8 +98,8 @@ class ChatServices {
                             text: data.text,
                             user: {
                                 _id: data.senderUid,
-                                name: await FirebaseServices.getUserDisplayName(data.senderUid),
-                                avatar: await FirebaseServices.getUserPhotoURL(data.senderUid),
+                                name: await UserServices.getUserDisplayName(data.senderUid),
+                                avatar: await UserServices.getUserPhotoURL(data.senderUid),
                             },
                         } as IMessage;
                     })
