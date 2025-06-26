@@ -21,7 +21,7 @@ export type RegisterNavigationProp = NativeStackNavigationProp<
 // ---------------- ChatStack ----------------
 export type ChatStackParamList = {
     ChatList: undefined,
-    Chat: { uid: string };
+    Chat: { chatRoomId: string };
 };
 
 export type ChatListNavigationProp = NativeStackNavigationProp<
