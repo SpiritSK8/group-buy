@@ -2,72 +2,72 @@ import User from "../../../types/User";
 
 const CHAT_LIST_TEST_DATA: User[] = [
     {
-        id: 1,
+        id: 'c1',
         name: "Bob the Builder",
         lastChat: "Hey, wanna grab some coffee tonight?"
     },
     {
-        id: 2,
+        id: 'c2',
         name: "Ted the Talker",
         lastChat: "I am talking."
     },
     {
-        id: 3,
+        id: 'c3',
         name: "Lili Lala",
         lastChat: "Lol?"
     },
     {
-        id: 4,
+        id: 'c4',
         name: "Kenneth CH",
         lastChat: "Bacot"
     },
     {
-        id: 5,
+        id: 'c5',
         name: "a",
         lastChat: "abdbdbs?"
     },
     {
-        id: 6,
+        id: 'c6',
         name: "asd",
         lastChat: "asdbsbdbfb"
     },
     {
-        id: 7,
+        id: 'c7',
         name: "Jon",
         lastChat: ""
     },
     {
-        id: 8,
+        id: 'c8',
         name: "Bob the Builder",
         lastChat: "Hey, wanna grab some coffee tonight?"
     },
     {
-        id: 9,
+        id: 'c9',
         name: "Bob the Builder",
         lastChat: "Hey, wanna grab some coffee tonight?"
     },
     {
-        id: 10,
+        id: 'c10',
         name: "Bob the Builder",
         lastChat: "Hey, wanna grab some coffee tonight?"
     },
     {
-        id: 11,
+        id: 'c11',
         name: "Bob the Builder",
         lastChat: "Hey, wanna grab some coffee tonight?"
     },
     {
-        id: 12,
+        id: 'c12',
         name: "Bob the Builder",
         lastChat: "Hey, wanna grab some coffee tonight?"
     },
     {
-        id: 13,
+        id: 'c13',
         name: "Bob the Builder",
         lastChat: "Hey, wanna grab some coffee tonight?"
     },
     {
-        id: 14,
+        id: 'c14',
         name: "Bob the Builder",
         lastChat: "Hey, wanna grab some coffee tonight?"
     },
