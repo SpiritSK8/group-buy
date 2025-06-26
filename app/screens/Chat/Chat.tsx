@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import React, { useState, useCallback, useLayoutEffect, useEffect } from 'react';
 
 import { collection, addDoc, orderBy, query, onSnapshot, serverTimestamp, Timestamp } from 'firebase/firestore';
@@ -19,6 +19,7 @@ type Props = {
 
 const Chat = ({ navigation, route }: Props) => {
     const [messages, setMessages] = useState<IMessage[]>([]);
+    const [hasPermission, setHasPermission] = useState<boolean | null>(null);
 
     const { user } = useAuth();
 
@@ -29,10 +30,13 @@ const Chat = ({ navigation, route }: Props) => {
 
         const unsubscribe = ChatServices.listenToMessages(
             chatRoomId,
-            (newMessages) => setMessages(newMessages),
+            (newMessages) => {
+                setHasPermission(true);
+                setMessages(newMessages);
+            },
             (error) => {
                 if (error.code === 'permission-denied') {
-                    console.error('You do not have permission to view messages in this chat room.');
+                    setHasPermission(false);
                 }
             }
         );
@@ -41,11 +45,17 @@ const Chat = ({ navigation, route }: Props) => {
     }, [chatRoomId]);
 
     const onSend = useCallback((message: IMessage) => {
-        ChatServices.sendMessage(
-            message._id.toString(),
-            message.text,
-            message.user._id.toString(),
-            chatRoomId);
+        try {
+            ChatServices.sendMessage(
+                message._id.toString(),
+                message.text,
+                message.user._id.toString(),
+                chatRoomId);
+        } catch (error: any) {
+            if (error.code === 'permission-denied') {
+                setHasPermission(false);
+            }
+        }
     }, [chatRoomId]);
 
     if (!user?.uid) {
@@ -54,6 +64,21 @@ const Chat = ({ navigation, route }: Props) => {
                 <Text>You must be logged in to chat.</Text>
             </View>
         )
+    } else if (hasPermission === null) {
+        return (
+            <View className="flex-1 justify-center items-center">
+                <ActivityIndicator />
+            </View>
+        );
+    } else if (!hasPermission) {
+        return (
+            <View className='flex-1 justify-center items-center'>
+                <Text>You do not have access to this chat room.</Text>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Text className='text-blue-600'>Go Back</Text>
+                </TouchableOpacity>
+            </View>
+        );
     } else {
         return (
             <GiftedChat
