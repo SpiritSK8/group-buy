@@ -70,7 +70,7 @@ const Chat = ({ navigation, route }: Props) => {
         return unsubscribe;
     }, []);
 
-    const onSend = useCallback((messages: IMessage[] = []) => {
+    const onSend = useCallback(async (messages: IMessage[] = []) => {
         // First item in newMessages is the message that's just been sent.
         const message = messages[0];
         const messageToSend: ChatMessage = {
@@ -79,8 +79,16 @@ const Chat = ({ navigation, route }: Props) => {
             text: message.text,
             senderUid: message.user._id
         }
-        // We add this to the database.
-        addDoc(collection(database, 'chats', chatRoomId, 'messages'), messageToSend);
+
+        try {
+            await addDoc(
+                collection(database, 'chats', chatRoomId, 'messages'),
+                messageToSend
+            );
+            console.log('Message sent successfully');
+        } catch (error) {
+            console.error('Failed to send message:', error);
+        }
     }, []);
 
     if (!user?.uid) {
