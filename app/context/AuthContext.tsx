@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 
 import { getAuth, User } from 'firebase/auth';
 
-import FirebaseServices from '../services/FirebaseServices';
+import UserServices from '../services/UserServices';
 
 interface AuthProps {
     user: User | null;
@@ -29,19 +29,19 @@ export const AuthProvider = ({ children }: any) => {
     }, []);
 
     async function register(displayName: string, email: string, password: string) {
-        const user = await FirebaseServices.register(displayName, email, password);
+        const user = await UserServices.register(displayName, email, password);
         setUser(user);
         return user;
     }
 
     async function login(email: string, password: string) {
-        const user = await FirebaseServices.login(email, password);
+        const user = await UserServices.login(email, password);
         setUser(user);
         return user;
     }
 
     async function logout() {
-        await FirebaseServices.logout();
+        await UserServices.logout();
         setUser(null);
     }
 
