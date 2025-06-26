@@ -64,12 +64,25 @@ class ChatServices {
         }
     }
 
+    // Listens to changes in messages for the specified chat room. Upon receiving new messages, fires onUpdate.
+    // Returns an unsubscribe function that can be called to stop the listener.
     static listenToMessages(chatRoomId: string, onUpdate: (messages: IMessage[]) => void, onError?: (error: any) => void): Unsubscribe {
         const q = query(
             collection(database, 'chats', chatRoomId, 'messages'),
             orderBy('createdAt', 'desc')
         );
-
+        
+        /**
+         * To prevent cheating time (e.g. creating a message whose time is set in the future), the message is first sent
+         * without a createdAt value, but a method is attached (serverTimestamp()) that tells the database to populate the createdAt
+         * field with the server's time after it receives the message.
+         * 
+         * This snapshot listener detects for changes in the chats database. So, upon sending a message, it fires 2 times:
+         * 1. When the message is first sent (createdAt is still not set).
+         * 2. When the database populates the createdAt field with the server time.
+         * 
+         * We don't want to display messages whose createdAt is still null, so we filter them out.
+         */
         const unsubscribe = onSnapshot(
             q,
             async (snapshot: QuerySnapshot<DocumentData>) => {
@@ -94,7 +107,6 @@ class ChatServices {
                 onUpdate(messages.filter((msg) => msg !== null));
             },
             (error) => {
-                console.error('Chat snapshot error:', error);
                 if (onError) onError(error);
             }
         );

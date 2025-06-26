@@ -27,46 +27,9 @@ const Chat = ({ navigation, route }: Props) => {
     useLayoutEffect(() => {
         console.log("Opening chat with: " + chatRoomId);
 
-        const q = query(collection(database, 'chats', chatRoomId, 'messages'), orderBy('createdAt', 'desc'));
-
-        const unsubscribe = onSnapshot(q, async snapshot => {
-            /**
-             * To prevent cheating time (e.g. creating a message whose time is set in the future), the message is first sent
-             * without a createdAt value, but a method is attached (serverTimestamp()) that tells the database to populate the createdAt
-             * field with the server's time after it receives the message.
-             * 
-             * This snapshot listener detects for changes in the chats database. So, upon sending a message, it fires 2 times:
-             * 1. When the message is first sent (createdAt is still null).
-             * 2. When the database populates the createdAt field with the server time.
-             * 
-             * We don't want to display messages whose createdAt is still null, so we filter them out.
-             */
-            const messages = await Promise.all(
-                // TODO: Cache the user's display name and profile pictures.
-                snapshot.docs.map(async doc => {
-                    const data = doc.data();
-
-                    if (!data.createdAt) return null; // Ignore messages whose timestamp is still pending.
-
-                    const message: IMessage = {
-                        _id: doc.id,
-                        createdAt: data.createdAt.toDate(),
-                        text: data.text,
-                        user: {
-                            _id: data.senderUid,
-                            name: await FirebaseServices.getUserDisplayName(data.senderUid),
-                            avatar: await FirebaseServices.getUserPhotoURL(data.senderUid),
-                        }
-                    }
-
-                    return message;
-                })
-            );
-
-            setMessages(
-                messages.filter(doc => doc != null) // Filters out nulls.
-            );
-        },
+        const unsubscribe = ChatServices.listenToMessages(
+            chatRoomId,
+            (newMessages) => setMessages(newMessages),
             (error) => {
                 if (error.code === 'permission-denied') {
                     console.error('You do not have permission to view messages in this chat room.');
@@ -75,7 +38,7 @@ const Chat = ({ navigation, route }: Props) => {
         );
 
         return unsubscribe;
-    }, []);
+    }, [chatRoomId]);
 
     const onSend = useCallback((message: IMessage) => {
         ChatServices.sendMessage(
