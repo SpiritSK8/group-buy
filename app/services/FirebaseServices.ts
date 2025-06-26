@@ -3,6 +3,9 @@ import { auth, database } from '../firebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, User } from 'firebase/auth';
 
 class FirebaseServices {
+    // Cache to store display name and photoUrl of users.
+    private static userCache: Record<string, { displayName: string; photoUrl: string }> = {};
+
     static async register(displayName: string, email: string, password: string): Promise<User> {
         if (displayName === '' || !displayName) {
             throw new Error('Display name cannot be empty.');
@@ -39,21 +42,43 @@ class FirebaseServices {
     }
 
     static async getUserDisplayName(uid: string): Promise<string> {
-        const userDoc = await getDoc(doc(database, 'users', uid));
-        if (userDoc.exists()) {
-            const data = userDoc.data();
-            return data.displayName;
+        let userInfo = FirebaseServices.userCache[uid];
+
+        if (!userInfo) {
+            // If data is not cached, we query from Firestore.
+            const userDoc = await getDoc(doc(database, 'users', uid));
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                // We can cache displayName and photoUrl together.
+                userInfo = { displayName: data.displayName, photoUrl: data.photoURL };
+                FirebaseServices.userCache[uid] = userInfo;
+            } else {
+                return 'Unknown User';
+            }
+        } else {
+            console.log('Calling from cache');
         }
-        return 'Unknown User';
+
+        return userInfo.displayName;
     }
 
     static async getUserPhotoURL(uid: string): Promise<string> {
-        const userDoc = await getDoc(doc(database, 'users', uid));
-        if (userDoc.exists()) {
-            const data = userDoc.data();
-            return data.photoURL;
+        let userInfo = FirebaseServices.userCache[uid];
+
+        if (!userInfo) {
+            // If data is not cached, we query from Firestore.
+            const userDoc = await getDoc(doc(database, 'users', uid));
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                // We can cache displayName and photoUrl together.
+                userInfo = { displayName: data.displayName, photoUrl: data.photoURL };
+                FirebaseServices.userCache[uid] = userInfo;
+            } else {
+                return '';
+            }
         }
-        return '';
+
+        return userInfo.photoUrl;
     }
 }
 
