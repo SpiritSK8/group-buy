@@ -5,13 +5,13 @@ import { getAuth, User } from 'firebase/auth';
 import FirebaseServices from '../services/FirebaseServices';
 
 interface AuthProps {
-    user?: User | null;
+    user: User | null;
     onRegister?: (displayName: string, email: string, password: string) => Promise<User>;
     onLogin?: (email: string, password: string) => Promise<User>;
     onLogout?: () => Promise<any>;
 }
 
-const AuthContext = createContext<AuthProps>({});
+const AuthContext = createContext<AuthProps>({ user: null });
 
 export const useAuth = () => {
     return useContext(AuthContext);
