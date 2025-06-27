@@ -1,14 +1,14 @@
 export const Colors = {
-    primary: '#378DDB',
+    primary: '#3B95E9',
     secondary: '#82D173',
     // accent: '#D84727',
     error: '#D84727',
     
     light: {
         text: '#001021',
-        background: '#D9DEEC',
+        background: '#FFFFFF',
         navBackground: '#E8E9F3',
-        iconInactive: '#D9DEEC',
+        iconInactive: '#868A93',
         iconActive: '#378DDB',
     }
 }

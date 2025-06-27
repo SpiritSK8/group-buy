@@ -5,6 +5,7 @@ import React from 'react';
 import GroupBuyList from '../screens/GroupBuy/GroupBuyList';
 import GroupBuy from '../screens/GroupBuy/GroupBuy';
 import { GroupBuyStackParamList } from '../types/Navigations';
+import { Colors } from '../constants/Colors';
 
 const Stack = createNativeStackNavigator<GroupBuyStackParamList>();
 
@@ -15,7 +16,7 @@ const GroupBuyStack = () => {
             screenOptions={{
                 headerShown: true,
                 title: 'Browse GroupBuys',
-                headerStyle: {backgroundColor: '#7766dd'}
+                headerStyle: {backgroundColor: Colors.primary}
         }}>
             <Stack.Screen name="GroupBuyList" component={GroupBuyList} />
             <Stack.Screen name="GroupBuy" component={GroupBuy} />

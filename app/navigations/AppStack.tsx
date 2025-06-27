@@ -8,6 +8,7 @@ import ChatStack from './ChatStack';
 import Settings from '../screens/Settings/Settings';
 
 import { AppStackParamList } from '../types/Navigations';
+import { Colors } from '../constants/Colors';
 
 const Tab = createBottomTabNavigator<AppStackParamList>();
 
@@ -15,7 +16,7 @@ const AppStack = () => {
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
-                headerStyle: { backgroundColor: '#7766dd', height: 80 },
+                headerStyle: { backgroundColor: Colors.primary, height: 80 },
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName: keyof typeof Ionicons.glyphMap;
 
@@ -31,8 +32,8 @@ const AppStack = () => {
 
                     return <Ionicons name={iconName} size={size} color={color} />;
                 },
-                tabBarActiveTintColor: '#7766dd',
-                tabBarInactiveTintColor: 'gray',
+                tabBarActiveTintColor: Colors.light.iconActive,
+                tabBarInactiveTintColor: Colors.light.iconInactive,
             })}
         >
             <Tab.Screen name="Deals" component={DealsStack}></Tab.Screen>

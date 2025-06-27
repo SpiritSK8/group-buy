@@ -6,6 +6,7 @@ import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import { useAuth } from '../../context/AuthContext';
 import { ChatNavigationProp, ChatRouteProp } from '../../types/Navigations';
 import ChatServices from '../../services/ChatServices';
+import { Colors } from '../../constants/Colors';
 
 type Props = {
     navigation: ChatNavigationProp;
@@ -55,19 +56,19 @@ const Chat = ({ navigation, route }: Props) => {
 
     if (!user?.uid) {
         return (
-            <View className="flex-1 justify-center h-full">
+            <View className="flex-1 justify-center h-full" style={{ backgroundColor: Colors.light.background }}>
                 <Text>You must be logged in to chat.</Text>
             </View>
         )
     } else if (hasPermission === null) {
         return (
-            <View className="flex-1 justify-center items-center">
+            <View className="flex-1 justify-center items-center" style={{ backgroundColor: Colors.light.background }}>
                 <ActivityIndicator />
             </View>
         );
     } else if (!hasPermission) {
         return (
-            <View className="flex-1 justify-center items-center">
+            <View className="flex-1 justify-center items-center" style={{ backgroundColor: Colors.light.background }}>
                 <Text>You do not have access to this chat room.</Text>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Text className="text-blue-600">Go Back</Text>
@@ -83,7 +84,7 @@ const Chat = ({ navigation, route }: Props) => {
                     _id: user.uid
                 }}
                 messagesContainerStyle={{
-                    backgroundColor: '#fff'
+                    backgroundColor: Colors.light.background
                 }}
                 renderUsernameOnMessage={true}
             />
