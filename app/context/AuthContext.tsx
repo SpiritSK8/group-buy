@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }: any) => {
 
     useEffect(() => {
         const unsubscribe = getAuth().onAuthStateChanged((user) => {
-            console.log("Currently logged in as: " + user?.email);
+            console.log('Currently logged in as: ' + user?.email);
             setUser(user);
         });
         return unsubscribe;
