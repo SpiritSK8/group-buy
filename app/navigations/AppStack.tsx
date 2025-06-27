@@ -3,9 +3,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from "@expo/vector-icons";
 
 import DealsStack from "./DealsStack";
-import GroupBuys from "../screens/(tabs)/GroupBuys";
-import Settings from "../screens/Settings/Settings";
+import GroupBuyStack from "./GroupBuyStack";
 import ChatStack from "./ChatStack";
+import Settings from "../screens/Settings/Settings";
+
 import { AppStackParamList } from "../types/Navigations";
 
 const Tab = createBottomTabNavigator<AppStackParamList>();
@@ -35,7 +36,7 @@ const AppStack = () => {
             })}
         >
             <Tab.Screen name='Deals' component={DealsStack}></Tab.Screen>
-            <Tab.Screen name='GroupBuys' component={GroupBuys} />
+            <Tab.Screen name='GroupBuys' component={GroupBuyStack} options={{ headerShown: false }} />
             <Tab.Screen name='Chats' component={ChatStack} options={{ headerShown: false }} />
             <Tab.Screen name='Settings' component={Settings} />
         </Tab.Navigator>

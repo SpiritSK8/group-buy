@@ -64,3 +64,24 @@ export type DealContributionFormRouteProp = RouteProp<
     DealStackParamList,
     'DealContributionForm'
 >;
+
+// ---------------- GroupBuyStack ----------------
+export type GroupBuyStackParamList = {
+    GroupBuyList: undefined,
+    GroupBuy: { groupBuyId: string };
+}
+
+export type GroupBuyListNavigationProp = NativeStackNavigationProp<
+    GroupBuyStackParamList,
+    'GroupBuyList'
+>;
+
+export type GroupBuyNavigationProp = NativeStackNavigationProp<
+    GroupBuyStackParamList,
+    'GroupBuy'
+>;
+
+export type GroupBuyRouteProp = RouteProp<
+    GroupBuyStackParamList,
+    'GroupBuy'
+>;
