@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
 import { FirebaseError } from 'firebase/app';
 
@@ -28,13 +27,13 @@ const Login = ({navigation}: Props) => {
                 console.log(error.code);
                 switch (error.code) {
                     case 'auth/invalid-email':
-                        msg = "Invalid email.";
+                        msg = 'Invalid email.';
                         break;
                     case 'auth/missing-password':
-                        msg = "Please provide a password.";
+                        msg = 'Please provide a password.';
                         break;
                     case 'auth/invalid-credential':
-                        msg = "Incorrect password.";
+                        msg = 'Incorrect password.';
                         break;
                 }
             }
@@ -61,7 +60,7 @@ const Login = ({navigation}: Props) => {
             <TextInput
                 value={password}
                 onChangeText={setPassword}
-                autoCapitalize={'none'}
+                autoCapitalize="none"
                 style={styles.input}
                 secureTextEntry
             />
@@ -71,7 +70,7 @@ const Login = ({navigation}: Props) => {
             </View>
 
             <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                <Text className='text-blue-500 mt-4 text-center'>
+                <Text className="text-blue-500 mt-4 text-center">
                     Don't have an account? Register here
                 </Text>
             </TouchableOpacity>

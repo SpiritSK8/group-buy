@@ -38,7 +38,7 @@ class UserServices {
     }
 
     static randomPhotoURL(): string {
-        return "https://i.pravatar.cc/150?img=" + Math.floor(Math.random() * 70);
+        return 'https://i.pravatar.cc/150?img=' + Math.floor(Math.random() * 70);
     }
 
     static async getUserDisplayName(uid: string): Promise<string> {

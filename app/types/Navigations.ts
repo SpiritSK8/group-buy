@@ -1,6 +1,6 @@
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RouteProp } from "@react-navigation/native";
-import { Deal } from "./Deal";
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp } from '@react-navigation/native';
+import { Deal } from './Deal';
 
 // ---------------- AppStack ----------------
 export type AppStackParamList = {

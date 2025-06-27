@@ -9,9 +9,9 @@ type Props = {
 
 const GroupBuyList = ({ navigation }: Props) => {
     return (
-        <View className='flex-1 items-center'>
+        <View className="flex-1 items-center">
             <Text>GroupBuy List</Text>
-            <Button title="Go to GroupBuy" onPress={() => { navigation.navigate('GroupBuy', { groupBuyId: "1" }) }} />
+            <Button title="Go to GroupBuy" onPress={() => { navigation.navigate('GroupBuy', { groupBuyId: '1' }) }} />
         </View>
     );
 };

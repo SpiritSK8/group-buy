@@ -14,7 +14,7 @@ type Props = {
 
 const ChatList = ({ navigation }: Props) => {
     return (
-        <View className='w-full'>
+        <View className="w-full">
             <FlatList
                 data={CHAT_LIST_TEST_DATA}
                 renderItem={({ item }: { item: User }) => (

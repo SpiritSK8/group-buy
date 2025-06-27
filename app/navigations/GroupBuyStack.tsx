@@ -1,10 +1,10 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import React from 'react';
 
-import GroupBuyList from "../screens/GroupBuy/GroupBuyList";
-import GroupBuy from "../screens/GroupBuy/GroupBuy";
-import { GroupBuyStackParamList } from "../types/Navigations";
+import GroupBuyList from '../screens/GroupBuy/GroupBuyList';
+import GroupBuy from '../screens/GroupBuy/GroupBuy';
+import { GroupBuyStackParamList } from '../types/Navigations';
 
 const Stack = createNativeStackNavigator<GroupBuyStackParamList>();
 
@@ -14,7 +14,7 @@ const GroupBuyStack = () => {
             initialRouteName="GroupBuyList"
             screenOptions={{
                 headerShown: true,
-                title: "Browse GroupBuys",
+                title: 'Browse GroupBuys',
                 headerStyle: {backgroundColor: '#7766dd'}
         }}>
             <Stack.Screen name="GroupBuyList" component={GroupBuyList} />

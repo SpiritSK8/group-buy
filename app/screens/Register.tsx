@@ -28,13 +28,13 @@ const Register = ({navigation}: Props) => {
                 console.log(error.code);
                 switch (error.code) {
                     case 'auth/invalid-email':
-                        msg = "Invalid email.";
+                        msg = 'Invalid email.';
                         break;
                     case 'auth/missing-password':
-                        msg = "Please provide a password.";
+                        msg = 'Please provide a password.';
                         break;
                     case 'auth/email-already-in-use':
-                        msg = "This email is already in use.";
+                        msg = 'This email is already in use.';
                         break;
                 }
             }

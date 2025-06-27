@@ -9,8 +9,8 @@ const Stack = createNativeStackNavigator<DealStackParamList>();
 const DealsStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="DealsHome" component={Deals} options={{ title: "Deals" }} />
-      <Stack.Screen name="DealContributionForm" component={DealContributionForm} options={{ title: "Contribute to Deal" }} />
+      <Stack.Screen name="DealsHome" component={Deals} options={{ title: 'Deals' }} />
+      <Stack.Screen name="DealContributionForm" component={DealContributionForm} options={{ title: 'Contribute to Deal' }} />
     </Stack.Navigator>
   );
 };

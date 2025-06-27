@@ -1,10 +1,10 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import React from 'react';
 
-import ChatList from "../screens/Chat/ChatList";
-import Chat from "../screens/Chat/Chat";
-import { ChatStackParamList } from "../types/Navigations";
+import ChatList from '../screens/Chat/ChatList';
+import Chat from '../screens/Chat/Chat';
+import { ChatStackParamList } from '../types/Navigations';
 
 const Stack = createNativeStackNavigator<ChatStackParamList>();
 
@@ -14,7 +14,7 @@ const ChatStack = () => {
             initialRouteName="ChatList"
             screenOptions={{
                 headerShown: true,
-                title: "Chat",
+                title: 'Chat',
                 headerStyle: {backgroundColor: '#7766dd'}
         }}>
             <Stack.Screen name="ChatList" component={ChatList} />

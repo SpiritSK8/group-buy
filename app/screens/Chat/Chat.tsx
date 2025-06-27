@@ -21,7 +21,7 @@ const Chat = ({ navigation, route }: Props) => {
     const chatRoomId: string = route.params.chatRoomId;
 
     useLayoutEffect(() => {
-        console.log("Opening chat with: " + chatRoomId);
+        console.log('Opening chat with: ' + chatRoomId);
 
         const unsubscribe = ChatServices.listenToMessages(
             chatRoomId,
@@ -55,7 +55,7 @@ const Chat = ({ navigation, route }: Props) => {
 
     if (!user?.uid) {
         return (
-            <View className='flex-1 justify-center h-full'>
+            <View className="flex-1 justify-center h-full">
                 <Text>You must be logged in to chat.</Text>
             </View>
         )
@@ -67,10 +67,10 @@ const Chat = ({ navigation, route }: Props) => {
         );
     } else if (!hasPermission) {
         return (
-            <View className='flex-1 justify-center items-center'>
+            <View className="flex-1 justify-center items-center">
                 <Text>You do not have access to this chat room.</Text>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Text className='text-blue-600'>Go Back</Text>
+                    <Text className="text-blue-600">Go Back</Text>
                 </TouchableOpacity>
             </View>
         );
