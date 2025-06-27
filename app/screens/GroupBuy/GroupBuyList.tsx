@@ -1,7 +1,10 @@
-import { View, Text, Button } from 'react-native';
+import { View, FlatList } from 'react-native';
 import React from 'react';
 
 import { GroupBuyListNavigationProp } from '../../types/Navigations';
+
+import { GROUP_BUY_TEST_DATA } from './test/GroupBuyTest';
+import GroupBuyCard from './components/GroupBuyCard';
 
 type Props = {
     navigation: GroupBuyListNavigationProp;
@@ -9,9 +12,17 @@ type Props = {
 
 const GroupBuyList = ({ navigation }: Props) => {
     return (
-        <View className="flex-1 items-center">
-            <Text>GroupBuy List</Text>
-            <Button title="Go to GroupBuy" onPress={() => { navigation.navigate('GroupBuy', { groupBuyId: '1' }) }} />
+        <View className="flex-1 w-full">
+            <FlatList
+                data={GROUP_BUY_TEST_DATA}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) =>
+                    <GroupBuyCard
+                        groupBuyId={item.id}
+                        onPress={() => navigation.navigate('GroupBuy', { groupBuyId: item.id })}
+                    />
+                }
+            />
         </View>
     );
 };
