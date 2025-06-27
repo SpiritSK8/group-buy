@@ -5,6 +5,9 @@ import AuthStack from './navigations/AuthStack';
 import AppStack from './navigations/AppStack';
 
 import './global.css';
+import { SafeAreaView } from 'react-native';
+import { Colors } from './constants/Colors';
+import { Fragment } from 'react';
 
 export default function App() {
     return (
@@ -18,6 +21,15 @@ export default function App() {
 
 const RootNavigator = () => {
     const { user } = useAuth();
-
+    
     return user ? <AppStack /> : <AuthStack />;
+
+    // return (
+    //     <Fragment>
+    //         <SafeAreaView className='flex-0' style={{ backgroundColor: Colors.error }}></SafeAreaView>
+    //         <SafeAreaView className='flex-1' style={{ backgroundColor: Colors.light.background }}>
+    //             {user ? <AppStack /> : <AuthStack />}
+    //         </SafeAreaView>
+    //     </Fragment>
+    // );
 };
