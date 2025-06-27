@@ -10,11 +10,16 @@ import { database, storage } from '../../firebaseConfig';
 
 import { useAuth } from '../../context/AuthContext';
 import UserServices from '../../services/UserServices';
+import { Colors } from '../../constants/Colors';
 
 
 const Settings = () => {
     const [displayName, setDisplayName] = useState('');
+    const [prevDisplayName, setPrevDisplayName] = useState('');
     const [photoURL, setPhotoURL] = useState('');
+    const [prevPhotoURL, setPrevPhotoURL] = useState('');
+    const [settingsChanged, setSettingsChanged] = useState(false);
+
     const [imageUploading, setImageUploading] = useState(false);
     const [loading, setLoading] = useState(true);
 
@@ -28,11 +33,17 @@ const Settings = () => {
             if (!uid) return;
             setDisplayName(await UserServices.getUserDisplayName(uid) || '');
             setPhotoURL(await UserServices.getUserPhotoURL(uid) || '')
+            setPrevDisplayName(displayName);
+            setPrevPhotoURL(photoURL);
             setLoading(false);
         };
 
         fetchUserData();
     }, [uid]);
+
+    useEffect(() => {
+        setSettingsChanged(displayName !== prevDisplayName || photoURL !== prevPhotoURL);
+    }, [displayName, photoURL, prevDisplayName, prevPhotoURL]);
 
     const pickImage = async () => {
         try {
@@ -68,6 +79,8 @@ const Settings = () => {
                 displayName,
                 photoURL,
             }, { merge: true });
+            setPrevDisplayName(displayName);
+            setPrevPhotoURL(photoURL);
             Alert.alert('Success', 'Profile updated.');
         } catch (error) {
             Alert.alert('Error', 'Failed to update profile.');
@@ -110,13 +123,22 @@ const Settings = () => {
 
             <Text className='font-light text-xl'>{user?.email}</Text>
 
-            <TouchableOpacity onPress={handleSave} className="w-80 bg-blue-500 py-3 px-6 rounded-xl mt-10">
+            {settingsChanged && <TouchableOpacity
+                onPress={handleSave}
+                className="w-80 py-3 px-6 rounded-xl mt-10"
+                style={{ backgroundColor: Colors.primary }}
+            >
                 <Text className="text-l text-white text-center font-medium">Save Changes</Text>
-            </TouchableOpacity>
+            </TouchableOpacity>}
 
-            <TouchableOpacity className="w-80 bg-red-500 py-3 px-6 rounded-xl mt-4" onPress={onLogout}>
+            <TouchableOpacity
+                onPress={onLogout}
+                className="w-80 py-3 px-6 rounded-xl absolute bottom-16"
+                style={{ backgroundColor: Colors.error }}
+            >
                 <Text className='text-l text-white text-center font-medium'>Sign Out</Text>
             </TouchableOpacity>
+            
         </View>
     );
 };
