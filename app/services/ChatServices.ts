@@ -8,9 +8,9 @@ import { ChatMessage } from '../types/ChatTypes';
 
 class ChatServices {
     // Creates a chat room and returns the id of the chat room.
-    static async createChatRoom(name: string, photoUrl: string): Promise<string> {
+    static async createChatRoom(name: string, photoURL: string): Promise<string> {
         try {
-            return (await addDoc(collection(database, 'chats'), { name, photoUrl })).id;
+            return (await addDoc(collection(database, 'chats'), { name, photoURL })).id;
         } catch (error) {
             console.error('An error occured.');
             return '';
