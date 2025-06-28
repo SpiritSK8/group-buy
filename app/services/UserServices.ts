@@ -12,12 +12,12 @@ class UserServices {
         }
         const user = (await createUserWithEmailAndPassword(auth, email, password)).user;
 
-        const photoURL = UserServices.randomPhotoURL(); // TODO: Remove.
+        const photoUrl = UserServices.randomPhotoUrl(); // TODO: Remove.
         // Updates user's display name and profile picture
         await setDoc(doc(database, 'users', user.uid),
             {
                 displayName,
-                photoURL
+                photoUrl
             });
 
         return user;
@@ -32,7 +32,7 @@ class UserServices {
         await signOut(auth);
     }
 
-    static randomPhotoURL(): string {
+    static randomPhotoUrl(): string {
         return 'https://i.pravatar.cc/150?img=' + Math.floor(Math.random() * 70);
     }
 
@@ -45,7 +45,7 @@ class UserServices {
             if (userDoc.exists()) {
                 const data = userDoc.data();
                 // We can cache displayName and photoUrl together.
-                userInfo = { displayName: data.displayName, photoUrl: data.photoURL };
+                userInfo = { displayName: data.displayName, photoUrl: data.photoUrl };
                 UserServices.userCache[uid] = userInfo;
             } else {
                 return 'Unknown User';
@@ -55,7 +55,7 @@ class UserServices {
         return userInfo.displayName;
     }
 
-    static async getUserPhotoURL(uid: string): Promise<string> {
+    static async getUserPhotoUrl(uid: string): Promise<string> {
         let userInfo = UserServices.userCache[uid];
 
         if (!userInfo) {
@@ -64,7 +64,7 @@ class UserServices {
             if (userDoc.exists()) {
                 const data = userDoc.data();
                 // We can cache displayName and photoUrl together.
-                userInfo = { displayName: data.displayName, photoUrl: data.photoURL };
+                userInfo = { displayName: data.displayName, photoUrl: data.photoUrl };
                 UserServices.userCache[uid] = userInfo;
             } else {
                 return '';
