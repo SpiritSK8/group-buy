@@ -1,6 +1,6 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, database } from '../firebaseConfig';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, User } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User } from 'firebase/auth';
 
 class UserServices {
     // Cache to store display name and photoUrl of users.
@@ -13,11 +13,6 @@ class UserServices {
         const user = (await createUserWithEmailAndPassword(auth, email, password)).user;
 
         const photoURL = UserServices.randomPhotoURL(); // TODO: Remove.
-        await updateProfile(user, {
-            displayName: displayName,
-            photoURL: photoURL // TODO: Remove.
-        })
-
         // Updates user's display name and profile picture
         await setDoc(doc(database, 'users', user.uid),
             {
@@ -77,6 +72,23 @@ class UserServices {
         }
 
         return userInfo.photoUrl;
+    }
+
+    static async updateUserProfile(uid: string, displayName?: string, photoUrl?: string): Promise<void> {
+        if (!displayName && !photoUrl) {
+            return;
+        }
+
+        if (displayName === '') {
+            throw new Error('Display name cannot be empty.');
+        }
+
+        // Updates user's display name and profile picture
+        await setDoc(doc(database, 'users', uid),
+            {
+                displayName,
+                photoUrl
+            });
     }
 }
 
