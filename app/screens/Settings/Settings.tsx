@@ -1,5 +1,5 @@
 import { View, Text, TextInput, Image, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { AntDesign } from '@expo/vector-icons';
 
 import * as ImagePicker from 'expo-image-picker';
@@ -11,9 +11,13 @@ import { database, storage } from '../../firebaseConfig';
 import { useAuth } from '../../context/AuthContext';
 import UserServices from '../../services/UserServices';
 import { Colors } from '../../constants/Colors';
+import { SettingsNavigationProp } from '../../types/Navigations';
 
+type Props = {
+    navigation: SettingsNavigationProp
+};
 
-const Settings = () => {
+const Settings = ({ navigation }: Props) => {
     const [displayName, setDisplayName] = useState('');
     const [prevDisplayName, setPrevDisplayName] = useState('');
     const [photoURL, setPhotoURL] = useState('');
@@ -44,6 +48,19 @@ const Settings = () => {
     useEffect(() => {
         setSettingsChanged(displayName !== prevDisplayName || photoURL !== prevPhotoURL);
     }, [displayName, photoURL, prevDisplayName, prevPhotoURL]);
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () =>
+                <TouchableOpacity
+                    onPress={onLogout}
+                    className="w-30 py-2 px-6 mr-2 rounded-xl"
+                    style={{ backgroundColor: Colors.error }}
+                >
+                    <Text className='text-l text-white text-center font-medium'>Sign Out</Text>
+                </TouchableOpacity>
+        });
+    });
 
     const pickImage = async () => {
         try {
@@ -131,14 +148,6 @@ const Settings = () => {
                 <Text className="text-l text-white text-center font-medium">Save Changes</Text>
             </TouchableOpacity>}
 
-            <TouchableOpacity
-                onPress={onLogout}
-                className="w-80 py-3 px-6 rounded-xl absolute bottom-16"
-                style={{ backgroundColor: Colors.error }}
-            >
-                <Text className='text-l text-white text-center font-medium'>Sign Out</Text>
-            </TouchableOpacity>
-            
         </View>
     );
 };
