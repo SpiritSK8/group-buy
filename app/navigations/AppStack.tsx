@@ -16,7 +16,7 @@ const AppStack = () => {
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
-                headerStyle: { backgroundColor: Colors.primary, height: 80 },
+                headerStyle: { backgroundColor: Colors.primary, height: 90 },
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName: keyof typeof Ionicons.glyphMap;
 
