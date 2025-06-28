@@ -5,6 +5,7 @@ import { GroupBuyListNavigationProp } from '../../types/Navigations';
 
 import { GROUP_BUY_TEST_DATA } from './test/GroupBuyTest';
 import GroupBuyCard from './components/GroupBuyCard';
+import { GroupBuyListHeader } from './components/GroupBuyListHeader';
 
 type Props = {
     navigation: GroupBuyListNavigationProp;
@@ -12,8 +13,10 @@ type Props = {
 
 const GroupBuyList = ({ navigation }: Props) => {
     return (
-        <View className="flex-1 w-full">
+        <View className="flex-1">
             <FlatList
+                contentContainerClassName="justify-center"
+                ListHeaderComponent={GroupBuyListHeader}
                 data={GROUP_BUY_TEST_DATA}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) =>
