@@ -85,3 +85,10 @@ export type GroupBuyRouteProp = RouteProp<
     GroupBuyStackParamList,
     'GroupBuy'
 >;
+
+// ---------------- Settings ----------------
+
+export type SettingsNavigationProp = NativeStackNavigationProp<
+    AppStackParamList,
+    'Settings'
+>;
