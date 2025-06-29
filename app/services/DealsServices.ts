@@ -1,46 +1,181 @@
-import { addDoc, collection, doc, getDoc, onSnapshot, orderBy, query, setDoc } from 'firebase/firestore';
-import { auth, database } from '../firebaseConfig';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, User } from 'firebase/auth';
+
+import { collection, addDoc, serverTimestamp, doc, getDoc, getDocs,query,orderBy,DocumentData} from 'firebase/firestore';
+import { database } from '../firebaseConfig';
 import { Deal } from '../types/Deal';
 
-class DealsServices {
-    // static async fetchDeals(): Promise<Deal[]> {
-    //     const q = query(collection(database, 'deals'), orderBy('createdAt', 'desc'));
-    //     const unsubscribe = onSnapshot(q, snapshot => {
-    //         const deals: Deal[] = snapshot.docs.map(
-    //             doc => {
-    //                 const data = doc.data();
-    //                 return {
-    //                     ...data
-    //                 };
-    //             }
-    //         )
-    //     });
-    // }
+export default class DealsServices {
+    /**
+     * Fetches a deal by its ID from Firestore.
+     * @param dealID The ID of the deal to fetch.
+     * @returns A Promise that resolves to a Deal object or null if not found.
+     */
 
-    static async fetchDeal(dealID: string): Promise<Deal | null> {
-        const dealDoc = await getDoc(doc(database, 'deals', dealID));
-        if (dealDoc.exists()) {
-            const data = dealDoc.data();
-            return {
-                dealID: data.dealID,
-                dealName: data.dealName,
-                dealStart: data.dealStart,
-                dealExpiry: data.dealExpiry,
-                dealStore: data.dealStore,
-                dealUrl: data.dealUrl,
-                isActive: data.isActive,
-                itemName: data.itemName,
-                itemOrigPrice: data.itemOrigPrice,
-                dealType: data.dealType
-            }
-        }
+  static async fetchDeal(dealID: string): Promise<Deal | null> {
+    const docRef = doc(database, 'deals', dealID);
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) return null;
+
+    const data = snap.data() as any;
+
+    const common = {
+      dealID: snap.id,
+      dealName: data.dealName,
+      dealStart: data.dealStart,
+      dealExpiry: data.dealExpiry,
+      dealStore: data.dealStore,
+      dealUrl: data.dealUrl,
+      isActive: data.isActive,
+      itemName: data.itemName,
+      itemOrigPrice: data.itemOrigPrice,
+    };
+
+    switch (data.dealType) {
+      case 'minItemPurchase':
+        return {
+          ...common,
+          dealType: 'minItemPurchase',
+          totalItems: data.totalItems!,
+          discount: data.discount!,
+        };
+      case 'buyXGetY':
+        return {
+          ...common,
+          dealType: 'buyXGetY',
+          itemReq: data.itemReq!,
+          itemFree: data.itemFree!,
+        };
+      case 'packageDeal':
+        return {
+          ...common,
+          dealType: 'packageDeal',
+          itemQuantityReq: data.itemQuantityReq!,
+          itemTotalPrice: data.itemTotalPrice!,
+        };
+      default:
         return null;
     }
+  }
+  static async fetchDeals(): Promise<Deal[]> {
+    // Build the query
+    const q = query(
+      collection(database, 'deals'),
+      orderBy('dealStart', 'asc')
+    );
 
-    static async addDeal(deal: Deal): Promise<void> {
-        await setDoc(doc(database, 'deals', deal.dealID), deal);
+    // Execute it
+    const snapshot = await getDocs(q);
+
+    // Map each document into a Deal
+    return snapshot.docs.map((doc) => {
+      const data = doc.data() as DocumentData;
+      const common = {
+        dealID: doc.id,
+        dealName: data.dealName,
+        dealStart: data.dealStart,
+        dealExpiry: data.dealExpiry,
+        dealStore: data.dealStore,
+        dealUrl: data.dealUrl,
+        isActive: data.isActive,
+        itemName: data.itemName,
+        itemOrigPrice: data.itemOrigPrice,
+      };
+
+      switch (data.dealType) {
+        case 'minItemPurchase':
+          return {
+            ...common,
+            dealType: 'minItemPurchase',
+            minPurchase: data.minPurchase!,
+            totalItems: data.totalItems!,
+            discount: data.discount!,
+          };
+        case 'buyXGetY':
+          return {
+            ...common,
+            dealType: 'buyXGetY',
+            itemReq: data.itemReq!,
+            itemFree: data.itemFree!,
+          };
+        case 'packageDeal':
+          return {
+            ...common,
+            dealType: 'packageDeal',
+            itemQuantityReq: data.itemQuantityReq!,
+            itemTotalPrice: data.itemTotalPrice!,
+          };
+        default:
+          throw new Error(
+            `Unknown dealType "${data.dealType}" in document ${doc.id}`
+          );
+      }
+    });
+  }
+
+  static async createDeal(
+    dealData: Omit<Deal, 'dealID'>
+  ): Promise<Deal> {
+    try {
+      // Prepare payload, cast to DocumentData so TS allows `createdAt`
+      const payload = {
+        ...dealData,
+        createdAt: serverTimestamp(),
+      } as DocumentData;
+
+      // Write new doc
+      const ref = await addDoc(collection(database, 'deals'), payload);
+
+      // Read it back so we get real Timestamp fields
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        throw new Error(`Document ${ref.id} not found after create.`);
+      }
+      const data = snap.data() as any;
+
+      // Build the "common" part of the Deal
+      const common = {
+        dealID: ref.id,
+        dealName: data.dealName,
+        dealStart: data.dealStart,
+        dealExpiry: data.dealExpiry,
+        dealStore: data.dealStore,
+        dealUrl: data.dealUrl,
+        isActive: data.isActive,
+        itemName: data.itemName,
+        itemOrigPrice: data.itemOrigPrice,
+      };
+
+      // Narrow on dealType to return the correct union member
+      switch (data.dealType) {
+        case 'minItemPurchase':
+          return {
+            ...common,
+            dealType: 'minItemPurchase',
+            totalItems: data.totalItems!,
+            discount: data.discount!,
+          };
+        case 'buyXGetY':
+          return {
+            ...common,
+            dealType: 'buyXGetY',
+            itemReq: data.itemReq!,
+            itemFree: data.itemFree!,
+          };
+        case 'packageDeal':
+          return {
+            ...common,
+            dealType: 'packageDeal',
+            itemQuantityReq: data.itemQuantityReq!,
+            itemTotalPrice: data.itemTotalPrice!,
+          };
+        default:
+          throw new Error(
+            `Unknown dealType "${data.dealType}" in newly created doc ${ref.id}`
+          );
+      }
+    } catch (err) {
+      console.error('DealsServices.createDeal failed', err);
+      throw err;
     }
-}
+  }
 
-export default DealsServices;
+}
