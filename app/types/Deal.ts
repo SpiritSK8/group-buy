@@ -4,8 +4,8 @@ import { Timestamp } from 'firebase/firestore';
 interface DealBase {
     dealID: string;
     dealName: string;
-    dealStart: Timestamp;
-    dealExpiry: Timestamp;
+    dealStart: string;
+    dealExpiry: string;
     dealStore: string;
     dealUrl: string;
     isActive: boolean;
