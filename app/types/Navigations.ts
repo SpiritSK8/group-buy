@@ -47,6 +47,7 @@ export type ChatRouteProp = RouteProp<ChatStackParamList, 'Chat'>;
 // ---------------- DealStack ----------------
 export type DealStackParamList = {
     DealsHome: undefined,
+    NewDealForm: undefined; 
     DealContributionForm: { deal: Deal };
 }
 

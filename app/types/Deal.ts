@@ -16,7 +16,6 @@ interface DealBase {
 // For deals like "buy X items for Y% off"
 interface MinItemPurchaseDeal extends DealBase {
     dealType: 'minItemPurchase';
-    minPurchase: number;
     totalItems: number;
     discount: number;
 }
