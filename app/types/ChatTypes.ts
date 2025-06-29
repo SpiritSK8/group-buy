@@ -13,8 +13,10 @@ export interface ChatUser {
     avatar: string;
 }
 
-export interface ChatPreview {
+export interface ChatData {
+    name: string;
+    photoURL: string;
+    participants: string[];
     lastMessage: string;
-    updatedAt: Timestamp;
-    otherUserUID: string;
+    lastMessageAt: string;
 }
