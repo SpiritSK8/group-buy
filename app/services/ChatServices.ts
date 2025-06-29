@@ -1,26 +1,34 @@
-import { addDoc, collection, doc, DocumentData, getDoc, onSnapshot, orderBy, query, QuerySnapshot, serverTimestamp, setDoc, Timestamp, Unsubscribe } from 'firebase/firestore';
+import { addDoc, collection, doc, DocumentData, getDoc, onSnapshot, orderBy, query, QuerySnapshot, serverTimestamp, setDoc, Timestamp, Unsubscribe, updateDoc } from 'firebase/firestore';
 import { database } from '../firebaseConfig';
 import UserServices from './UserServices';
 
 import { IMessage } from 'react-native-gifted-chat';
 
-import { ChatMessage } from '../types/ChatTypes';
+import { ChatData, ChatMessage } from '../types/ChatTypes';
 
 class ChatServices {
     // Creates a chat room and returns the id of the chat room.
-    static async createChatRoom(name: string, photoURL: string): Promise<string | null> {
+    static async createAndJoinChatRoom(userUID: string, name: string, photoURL: string): Promise<string | null> {
         try {
-            return (await addDoc(collection(database, 'chats'), { name, photoURL })).id;
-        } catch (error) {
-            console.error('An error occured.');
+            return (await addDoc(collection(database, 'chats'),
+                {
+                    name,
+                    photoURL,
+                    participants: [userUID],
+                    lastMessage: '',
+                    lastMessageAt: serverTimestamp(),
+                }
+            )).id;
+        } catch (error: any) {
+            console.error('An error occured. ' + error.message);
             return null;
         }
     }
 
     static async joinChatRoom(userUID: string, chatRoomID: string): Promise<void> {
         try {
-            const userDoc = await getDoc(doc(database, 'chats', chatRoomID));
-            if (!userDoc.exists()) {
+            const chatDoc = await getDoc(doc(database, 'chats', chatRoomID));
+            if (!chatDoc.exists()) {
                 // The specified chat room doesn't exist.
                 return;
             }
@@ -29,17 +37,24 @@ class ChatServices {
                 // User is already inside this chat room.
                 return;
             } else {
-                await setDoc(doc(database, 'chats', chatRoomID, 'participants', userUID), {});
+                const participants = chatDoc.data().participants;
+                participants.push(userUID);
+                await updateDoc(doc(database, 'chats', chatRoomID), { participants });
             }
-        } catch (error) {
-            console.error('An error occured.');
+        } catch (error: any) {
+            console.error('An error occured. ' + error.message);
         }
     }
 
     static async isUserInChatRoom(userUID: string, chatRoomID: string): Promise<boolean> {
         try {
-            const userDoc = await getDoc(doc(database, 'chats', chatRoomID, 'participants', userUID));
-            return userDoc.exists();
+            const chatDoc = await getDoc(doc(database, 'chats', chatRoomID));
+            if (chatDoc.exists()) {
+                const participants = chatDoc.data().participants;
+                return participants.includes(userUID);
+            }
+
+            return false;
         } catch (error) {
             console.error('An error occured.');
             return false;
@@ -59,7 +74,9 @@ class ChatServices {
                 collection(database, 'chats', chatRoomID, 'messages'),
                 message
             );
-            console.log('Message sent successfully');
+
+            // Update last message sent for easier query.
+            await updateDoc(doc(database, 'chats', chatRoomID), { lastMessage: text, lastMessageAt: serverTimestamp() });
         } catch (error) {
             console.error('Failed to send message:', error);
         }
@@ -113,6 +130,22 @@ class ChatServices {
         );
 
         return unsubscribe;
+    }
+
+    static async fetchChatData(chatRoomID: string) {
+        const chatDoc = await getDoc(doc(database, 'chats', chatRoomID));
+        if (chatDoc.exists()) {
+            const data = chatDoc.data();
+            return {
+                name: data.name,
+                photoURL: data.photoURL,
+                participants: data.participants,
+                lastMessage: data.lastMessage,
+                lastMessageAt: data.lastMessageAt
+            } as ChatData;
+        }
+
+        return null;
     }
 }
 
