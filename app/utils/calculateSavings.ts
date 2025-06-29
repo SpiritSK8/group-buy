@@ -1,37 +1,27 @@
 import { Deal } from '../types/Deal';
 
+/**
+ * Calculates the total monetary savings for a given deal based on its type.
+ * This function is type-safe due to the discriminated union on `deal.dealType`.
+ * @param deal The deal object.
+ * @returns The total monetary savings for the deal.
+ */
 export function calculateSavings(deal: Deal): number {
-    const { itemOrigPrice, dealType, minPurchase, totalItems, discount, itemReq, itemFree, itemQuantityReq, itemTotalPrice } = deal;
-
-    let savings = 0;
-
-    switch (dealType) {
-        case 'minItemPurchase':
-            if (minPurchase && totalItems && discount) {
-                const originalTotal = itemOrigPrice * totalItems;
-                const discountedTotal = originalTotal * (1 - discount / 100);
-                savings = (originalTotal - discountedTotal)/ totalItems; // Savings per item
-            }
-            break;
-
-        case 'buyXGetY':
-            if (itemReq && itemFree) {
-                const effectiveItems = itemReq + itemFree;
-                savings = (itemOrigPrice * itemFree)/ effectiveItems; // Savings per item
-            }
-            break;
-
-        case 'packageDeal':
-            if (itemQuantityReq && itemTotalPrice) {
-                const originalTotal = itemOrigPrice * itemQuantityReq;
-                savings = (originalTotal - itemTotalPrice)/ itemQuantityReq; // Savings per item
-            }
-            break;
-
-        default:
-            break;
+  switch (deal.dealType) {
+    case 'minItemPurchase': {
+      // Savings from a percentage discount on a set number of items.
+      const originalTotal = deal.itemOrigPrice * deal.totalItems;
+      const discountedTotal = originalTotal * (1 - deal.discount / 100);
+      return (originalTotal - discountedTotal)/deal.totalItems;
     }
-
-    return savings;
-
+    case 'buyXGetY': {
+      // Savings are the value of the free items.
+      return deal.itemOrigPrice * deal.itemFree/(deal.itemReq + deal.itemFree);
+    }
+    case 'packageDeal': {
+      // Savings from a fixed bundle price compared to the original total.
+      const originalTotal = deal.itemOrigPrice * deal.itemQuantityReq;
+      return (originalTotal - deal.itemTotalPrice)/deal.itemQuantityReq;
+    }
+  }
 }
