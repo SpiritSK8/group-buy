@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { View, Text } from "react-native";
 import { Colors } from "../../../constants/Colors";
 
-export const GroupBuyListHeader = () => {
+const GroupBuyListHeader = () => {
     return (
         <View className="items-center">
             <View className="p-5 rounded-2xl mt-12 mb-8 justify-center items-center" style={{ backgroundColor: Colors.primary }}>
@@ -13,3 +13,5 @@ export const GroupBuyListHeader = () => {
         </View>
     );
 };
+
+export default GroupBuyListHeader;
