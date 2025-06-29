@@ -21,7 +21,7 @@ const Deals = ({ navigation }: { navigation: DealsHomeNavigationProp }) => {
             <Text className="text-2xl font-bold mt-6 mb-2">💰 Top Savings</Text>
 
             {topSavingsDeals.map(deal => (
-                <DealCard deal={deal} onPress={() => navigation.navigate('DealContributionForm', { deal })} />
+                <DealCard key={deal.dealID} deal={deal} onPress={() => navigation.navigate('DealContributionForm', { deal })} />
             ))}
         </ScrollView>
     );

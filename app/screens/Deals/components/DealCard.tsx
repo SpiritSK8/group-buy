@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity } from "react-native";
 
 import { Deal } from '../../../types/Deal';
@@ -7,7 +7,6 @@ import { calculateSavings } from '../../../utils/calculateSavings';
 export const DealCard = ({ deal, onPress }: { deal: Deal, onPress: () => void }) => {
     return (
         <TouchableOpacity
-            key={deal.dealID}
             onPress={onPress}
         >
             <View className="bg-white rounded-xl p-4 mb-4 shadow">
