@@ -22,8 +22,6 @@ const Chat = ({ navigation, route }: Props) => {
     const chatRoomID: string = route.params.chatRoomID;
 
     useLayoutEffect(() => {
-        console.log('Opening chat with: ' + chatRoomID);
-
         const unsubscribe = ChatServices.listenToMessages(
             chatRoomID,
             (newMessages) => {
