@@ -3,15 +3,27 @@ import { View, Text, TextInput, Button } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { DealContributionFormNavigationProp, DealContributionFormRouteProp } from '../../types/Navigations';
+import GroupBuyServices from '../../services/GroupBuyServices';
+import { useAuth } from '../../context/AuthContext';
 
 const DealContributionForm = ({ navigation, route }: { navigation: DealContributionFormNavigationProp, route: DealContributionFormRouteProp }) => {
     const { deal } = route.params;
+
+    const { user } = useAuth();
 
     const [itemsContributed, setItemsContributed] = useState('');
     const [purchaseDate, setPurchaseDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [timeRange, setTimeRange] = useState('');
     const [location, setLocation] = useState('');
+
+    if (!user?.uid) {
+        return (
+            <View className="justify-center items-center">
+                <Text>You must be logged in to join a GroupBuy.</Text>
+            </View>
+        );
+    }
 
     return (
         <View className="p-4">
@@ -57,6 +69,7 @@ const DealContributionForm = ({ navigation, route }: { navigation: DealContribut
 
             <Button title="Submit" onPress={() => {
                 // Do something with data here (e.g., save or send to backend)
+                GroupBuyServices.createAndJoinGroupBuy(user.uid, deal.dealID);
                 navigation.goBack();
             }} />
         </View>
