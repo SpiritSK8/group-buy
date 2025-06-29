@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
-import {ScrollView, View, Text, TextInput, Button, StyleSheet,Alert,} from 'react-native';
+import {ScrollView, View, Text, TextInput, Button, StyleSheet,Alert, Platform} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import type { DealStackParamList } from '../../types/Navigations';
 import DealsServices from '../../services/DealsServices';
 
@@ -15,8 +16,10 @@ const NewDealForm: React.FC = () => {
 
   // Common fields
   const [dealName, setDealName] = useState('');
-  const [dealStart, setDealStart] = useState('');
-  const [dealExpiry, setDealExpiry] = useState('');
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [expiryDate, setExpiryDate] = useState<Date | null>(null);
+  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+  const [showExpiryDatePicker, setShowExpiryDatePicker] = useState(false);
   const [dealStore, setDealStore] = useState('');
   const [dealUrl, setDealUrl] = useState('');
   const [itemName, setItemName] = useState('');
@@ -33,10 +36,30 @@ const NewDealForm: React.FC = () => {
 
   const [submitting, setSubmitting] = useState(false);
 
+  const onStartDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+    setShowStartDatePicker(Platform.OS === 'ios'); // on iOS, the picker can be persistent
+    if (event.type === 'set' && selectedDate) {
+      setShowStartDatePicker(false);
+      setStartDate(selectedDate);
+      if (expiryDate && selectedDate > expiryDate) {
+        setExpiryDate(null); // Reset expiry if it's before the new start date
+      }
+    } else {
+      setShowStartDatePicker(false);
+    }
+  };
+
+  const onExpiryDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+    setShowExpiryDatePicker(false);
+    if (event.type === 'set' && selectedDate) {
+      setExpiryDate(selectedDate);
+    }
+  };
+
   const handleSubmit = async () => {
     // Validate common fields
-    if (!dealName || !dealStart || !dealExpiry || !dealStore || !dealUrl || !itemName || !itemOrigPrice) {
-      Alert.alert('Error', 'Please fill in all common fields');
+    if (!dealName || !startDate || !expiryDate || !dealStore || !dealUrl || !itemName || !itemOrigPrice) {
+      Alert.alert('Error', 'Please fill in all fields, including dates.');
       return;
     }
     const origPrice = parseFloat(itemOrigPrice);
@@ -48,8 +71,8 @@ const NewDealForm: React.FC = () => {
     // Build payload
     const payload: any = {
       dealName,
-      dealStart,
-      dealExpiry,
+      dealStart: startDate.toISOString().split('T')[0],
+      dealExpiry: expiryDate.toISOString().split('T')[0],
       dealStore,
       dealUrl,
       isActive: true,
@@ -108,11 +131,28 @@ const NewDealForm: React.FC = () => {
       <Text style={styles.label}>Deal Name</Text>
       <TextInput style={styles.input} value={dealName} onChangeText={setDealName} />
 
-      <Text style={styles.label}>Deal Start (YYYY-MM-DD)</Text>
-      <TextInput style={styles.input} value={dealStart} onChangeText={setDealStart} />
+      <Text style={styles.label}>Deal Start</Text>
+      <Button onPress={() => setShowStartDatePicker(true)} title={startDate ? startDate.toLocaleDateString() : 'Select Start Date'} />
+      {showStartDatePicker && (
+        <DateTimePicker
+          value={startDate || new Date()}
+          mode="date"
+          display="default"
+          onChange={onStartDateChange}
+        />
+      )}
 
-      <Text style={styles.label}>Deal Expiry (YYYY-MM-DD)</Text>
-      <TextInput style={styles.input} value={dealExpiry} onChangeText={setDealExpiry} />
+      <Text style={styles.label}>Deal Expiry</Text>
+      <Button onPress={() => setShowExpiryDatePicker(true)} title={expiryDate ? expiryDate.toLocaleDateString() : 'Select Expiry Date'} />
+      {showExpiryDatePicker && (
+        <DateTimePicker
+          value={expiryDate || startDate || new Date()}
+          mode="date"
+          display="default"
+          onChange={onExpiryDateChange}
+          minimumDate={startDate || undefined}
+        />
+      )}
 
       <Text style={styles.label}>Deal Store</Text>
       <TextInput style={styles.input} value={dealStore} onChangeText={setDealStore} />

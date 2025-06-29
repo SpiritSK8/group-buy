@@ -1,15 +1,11 @@
 
-import { collection, addDoc, serverTimestamp, doc, getDoc, getDocs,query,orderBy,DocumentData} from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc, getDocs,query,orderBy,QueryDocumentSnapshot,DocumentData} from 'firebase/firestore';
 import { database } from '../firebaseConfig';
 import { Deal } from '../types/Deal';
 
-export default class DealsServices {
-    /**
-     * Fetches a deal by its ID from Firestore.
-     * @param dealID The ID of the deal to fetch.
-     * @returns A Promise that resolves to a Deal object or null if not found.
-     */
 
+
+export default class DealsServices {
   static async fetchDeal(dealID: string): Promise<Deal | null> {
     const docRef = doc(database, 'deals', dealID);
     const snap = await getDoc(docRef);
@@ -18,40 +14,40 @@ export default class DealsServices {
     const data = snap.data() as any;
 
     const common = {
-      dealID: snap.id,
-      dealName: data.dealName,
-      dealStart: data.dealStart,
-      dealExpiry: data.dealExpiry,
-      dealStore: data.dealStore,
-      dealUrl: data.dealUrl,
-      isActive: data.isActive,
-      itemName: data.itemName,
-      itemOrigPrice: data.itemOrigPrice,
+        dealID: snap.id,
+        dealName: data.dealName,
+        dealStart: data.dealStart,
+        dealExpiry: data.dealExpiry,
+        dealStore: data.dealStore,
+        dealUrl: data.dealUrl,
+        isActive: data.isActive,
+        itemName: data.itemName,
+        itemOrigPrice: data.itemOrigPrice,
     };
 
     switch (data.dealType) {
-      case 'minItemPurchase':
+        case 'minItemPurchase':
         return {
-          ...common,
-          dealType: 'minItemPurchase',
-          totalItems: data.totalItems!,
-          discount: data.discount!,
+            ...common,
+            dealType: 'minItemPurchase',
+            totalItems: data.totalItems!,
+            discount: data.discount!,
         };
-      case 'buyXGetY':
+        case 'buyXGetY':
         return {
-          ...common,
-          dealType: 'buyXGetY',
-          itemReq: data.itemReq!,
-          itemFree: data.itemFree!,
+            ...common,
+            dealType: 'buyXGetY',
+            itemReq: data.itemReq!,
+            itemFree: data.itemFree!,
         };
-      case 'packageDeal':
+        case 'packageDeal':
         return {
-          ...common,
-          dealType: 'packageDeal',
-          itemQuantityReq: data.itemQuantityReq!,
-          itemTotalPrice: data.itemTotalPrice!,
+            ...common,
+            dealType: 'packageDeal',
+            itemQuantityReq: data.itemQuantityReq!,
+            itemTotalPrice: data.itemTotalPrice!,
         };
-      default:
+        default:
         return null;
     }
   }
@@ -85,7 +81,6 @@ export default class DealsServices {
           return {
             ...common,
             dealType: 'minItemPurchase',
-            minPurchase: data.minPurchase!,
             totalItems: data.totalItems!,
             discount: data.discount!,
           };
@@ -115,23 +110,20 @@ export default class DealsServices {
     dealData: Omit<Deal, 'dealID'>
   ): Promise<Deal> {
     try {
-      // Prepare payload, cast to DocumentData so TS allows `createdAt`
       const payload = {
         ...dealData,
         createdAt: serverTimestamp(),
       } as DocumentData;
 
-      // Write new doc
       const ref = await addDoc(collection(database, 'deals'), payload);
 
-      // Read it back so we get real Timestamp fields
       const snap = await getDoc(ref);
       if (!snap.exists()) {
         throw new Error(`Document ${ref.id} not found after create.`);
       }
       const data = snap.data() as any;
 
-      // Build the "common" part of the Deal
+
       const common = {
         dealID: ref.id,
         dealName: data.dealName,
@@ -143,8 +135,6 @@ export default class DealsServices {
         itemName: data.itemName,
         itemOrigPrice: data.itemOrigPrice,
       };
-
-      // Narrow on dealType to return the correct union member
       switch (data.dealType) {
         case 'minItemPurchase':
           return {
