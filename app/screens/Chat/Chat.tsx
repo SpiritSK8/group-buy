@@ -78,7 +78,7 @@ const Chat = ({ navigation, route }: Props) => {
     } else {
         return (
             <GiftedChat
-                messages={GiftedChat.append([], messages)}
+                messages={messages}
                 onSend={(messages: IMessage[]) => onSend(messages[0])}
                 user={{
                     _id: user.uid
