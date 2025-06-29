@@ -42,7 +42,7 @@ const DealContributionForm = ({ navigation, route }: { navigation: DealContribut
             <Text className="mt-4">Preferred Time Range:</Text>
             <TextInput
                 className="border p-2 mb-3"
-                placeholder="e.g. 2–4 PM"
+                placeholder="e.g. 2-4 PM"
                 value={timeRange}
                 onChangeText={setTimeRange}
             />

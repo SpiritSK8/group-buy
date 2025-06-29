@@ -19,7 +19,7 @@ const ChatList = ({ navigation }: Props) => {
             <FlatList
                 data={CHAT_LIST_TEST_DATA}
                 renderItem={({ item }: { item: User }) => (
-                    <UserCard user={item} onPress={() => navigation.navigate('Chat', { chatRoomId: item.id })}></UserCard>
+                    <UserCard user={item} onPress={() => navigation.navigate('Chat', { chatRoomID: item.id })}></UserCard>
                 )}
                 keyExtractor={(item) => item.id} />
         </View>

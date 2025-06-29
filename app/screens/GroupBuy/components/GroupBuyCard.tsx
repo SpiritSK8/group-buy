@@ -8,11 +8,11 @@ import { GroupBuyDetails } from '../../../types/GroupBuyTypes';
 import { Colors } from '../../../constants/Colors';
 
 type Props = {
-    groupBuyId: string,
+    groupBuyID: string,
     onPress?: () => void
 }
 
-const GroupBuyCard = ({ groupBuyId, onPress }: Props) => {
+const GroupBuyCard = ({ groupBuyID, onPress }: Props) => {
     const [title, setTitle] = useState<string>('');
     const [location, setLocation] = useState<string>('');
     const [endTime, setEndTime] = useState<string>('');
@@ -36,7 +36,7 @@ const GroupBuyCard = ({ groupBuyId, onPress }: Props) => {
                 <Image source={require('../../../assets/favicon.png')} className="mr-5"></Image>
 
                 <View>
-                    <Text className="text-xl font-bold mb-1">Ice Cream buy 1 get 1 #{groupBuyId}</Text>
+                    <Text className="text-xl font-bold mb-1">Ice Cream buy 1 get 1 #{groupBuyID}</Text>
 
                     <View className="flex-1 flex-row">
                         <View className="flex-row items-center mr-4">

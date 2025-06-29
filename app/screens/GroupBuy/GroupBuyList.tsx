@@ -1,5 +1,5 @@
 import { View, FlatList } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { GroupBuyListNavigationProp } from '../../types/Navigations';
 
@@ -12,6 +12,10 @@ type Props = {
 }
 
 const GroupBuyList = ({ navigation }: Props) => {
+    useEffect(() => {
+
+    });
+
     return (
         <View className="flex-1">
             <FlatList
@@ -21,8 +25,8 @@ const GroupBuyList = ({ navigation }: Props) => {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) =>
                     <GroupBuyCard
-                        groupBuyId={item.id}
-                        onPress={() => navigation.navigate('GroupBuy', { groupBuyId: item.id })}
+                        groupBuyID={item.id}
+                        onPress={() => navigation.navigate('GroupBuy', { groupBuyID: item.id })}
                     />
                 }
             />

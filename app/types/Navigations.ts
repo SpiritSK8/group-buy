@@ -29,7 +29,7 @@ export type RegisterNavigationProp = NativeStackNavigationProp<
 // ---------------- ChatStack ----------------
 export type ChatStackParamList = {
     ChatList: undefined,
-    Chat: { chatRoomId: string };
+    Chat: { chatRoomID: string };
 };
 
 export type ChatListNavigationProp = NativeStackNavigationProp<
@@ -69,7 +69,7 @@ export type DealContributionFormRouteProp = RouteProp<
 // ---------------- GroupBuyStack ----------------
 export type GroupBuyStackParamList = {
     GroupBuyList: undefined,
-    GroupBuy: { groupBuyId: string };
+    GroupBuy: { groupBuyID: string };
 }
 
 export type GroupBuyListNavigationProp = NativeStackNavigationProp<

@@ -8,37 +8,37 @@ import { ChatMessage } from '../types/ChatTypes';
 
 class ChatServices {
     // Creates a chat room and returns the id of the chat room.
-    static async createChatRoom(name: string, photoURL: string): Promise<string> {
+    static async createChatRoom(name: string, photoURL: string): Promise<string | null> {
         try {
             return (await addDoc(collection(database, 'chats'), { name, photoURL })).id;
         } catch (error) {
             console.error('An error occured.');
-            return '';
+            return null;
         }
     }
 
-    static async joinChatRoom(userUid: string, chatRoomId: string): Promise<void> {
+    static async joinChatRoom(userUID: string, chatRoomID: string): Promise<void> {
         try {
-            const userDoc = await getDoc(doc(database, 'chats', chatRoomId));
+            const userDoc = await getDoc(doc(database, 'chats', chatRoomID));
             if (!userDoc.exists()) {
                 // The specified chat room doesn't exist.
                 return;
             }
 
-            if (await this.isUserInChatRoom(userUid, chatRoomId)) {
+            if (await this.isUserInChatRoom(userUID, chatRoomID)) {
                 // User is already inside this chat room.
                 return;
             } else {
-                await setDoc(doc(database, 'chats', chatRoomId, 'participants', userUid), {});
+                await setDoc(doc(database, 'chats', chatRoomID, 'participants', userUID), {});
             }
         } catch (error) {
             console.error('An error occured.');
         }
     }
 
-    static async isUserInChatRoom(userUid: string, chatRoomId: string): Promise<boolean> {
+    static async isUserInChatRoom(userUID: string, chatRoomID: string): Promise<boolean> {
         try {
-            const userDoc = await getDoc(doc(database, 'chats', chatRoomId, 'participants', userUid));
+            const userDoc = await getDoc(doc(database, 'chats', chatRoomID, 'participants', userUID));
             return userDoc.exists();
         } catch (error) {
             console.error('An error occured.');
@@ -46,17 +46,17 @@ class ChatServices {
         }
     }
 
-    static async sendMessage(_id: string, text: string, senderUid: string, chatRoomId: string): Promise<void> {
+    static async sendMessage(_id: string, text: string, senderUID: string, chatRoomID: string): Promise<void> {
         const message: ChatMessage = {
             _id,
             createdAt: (serverTimestamp() as Timestamp),
             text,
-            senderUid
+            senderUID
         }
 
         try {
             await addDoc(
-                collection(database, 'chats', chatRoomId, 'messages'),
+                collection(database, 'chats', chatRoomID, 'messages'),
                 message
             );
             console.log('Message sent successfully');
@@ -67,12 +67,12 @@ class ChatServices {
 
     // Listens to changes in messages for the specified chat room. Upon receiving new messages, fires onUpdate.
     // Returns an unsubscribe function that can be called to stop the listener.
-    static listenToMessages(chatRoomId: string, onUpdate: (messages: IMessage[]) => void, onError?: (error: any) => void): Unsubscribe {
+    static listenToMessages(chatRoomID: string, onUpdate: (messages: IMessage[]) => void, onError?: (error: any) => void): Unsubscribe {
         const q = query(
-            collection(database, 'chats', chatRoomId, 'messages'),
+            collection(database, 'chats', chatRoomID, 'messages'),
             orderBy('createdAt', 'desc')
         );
-        
+
         /**
          * To prevent cheating time (e.g. creating a message whose time is set in the future), the message is first sent
          * without a createdAt value, but a method is attached (serverTimestamp()) that tells the database to populate the createdAt
@@ -97,9 +97,9 @@ class ChatServices {
                             createdAt: data.createdAt.toDate(),
                             text: data.text,
                             user: {
-                                _id: data.senderUid,
-                                name: await UserServices.getUserDisplayName(data.senderUid),
-                                avatar: await UserServices.getUserPhotoURL(data.senderUid),
+                                _id: data.senderUID,
+                                name: await UserServices.getUserDisplayName(data.senderUID),
+                                avatar: await UserServices.getUserPhotoURL(data.senderUID),
                             },
                         } as IMessage;
                     })

@@ -10,7 +10,7 @@ type Props = {
 
 const GroupBuy = ({ navigation, route }: Props) => {
     useLayoutEffect(() => {
-        navigation.setOptions({title: 'GroupBuy #' + route.params.groupBuyId});
+        navigation.setOptions({title: 'GroupBuy #' + route.params.groupBuyID});
     });
 
     return (

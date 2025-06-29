@@ -19,13 +19,13 @@ const Chat = ({ navigation, route }: Props) => {
 
     const { user } = useAuth();
 
-    const chatRoomId: string = route.params.chatRoomId;
+    const chatRoomID: string = route.params.chatRoomID;
 
     useLayoutEffect(() => {
-        console.log('Opening chat with: ' + chatRoomId);
+        console.log('Opening chat with: ' + chatRoomID);
 
         const unsubscribe = ChatServices.listenToMessages(
-            chatRoomId,
+            chatRoomID,
             (newMessages) => {
                 setHasPermission(true);
                 setMessages(newMessages);
@@ -38,7 +38,7 @@ const Chat = ({ navigation, route }: Props) => {
         );
 
         return unsubscribe;
-    }, [chatRoomId]);
+    }, [chatRoomID]);
 
     const onSend = useCallback((message: IMessage) => {
         try {
@@ -46,13 +46,13 @@ const Chat = ({ navigation, route }: Props) => {
                 message._id.toString(),
                 message.text,
                 message.user._id.toString(),
-                chatRoomId);
+                chatRoomID);
         } catch (error: any) {
             if (error.code === 'permission-denied') {
                 setHasPermission(false);
             }
         }
-    }, [chatRoomId]);
+    }, [chatRoomID]);
 
     if (!user?.uid) {
         return (

@@ -1,6 +1,6 @@
-export interface GroupBuyType {
+export interface GroupBuyDetails {
     id: string;
     dealID: string;
-    userUIDs: string[];
+    participants: string[];
     chatGroupID: string;
 }
