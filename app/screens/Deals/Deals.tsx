@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -21,8 +22,11 @@ const Deals: React.FC<Props> = ({ navigation }) => {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    // fetchDeals is async, so wrap it
+  useFocusEffect(
+    useCallback(() => {
+        let isActive = true;
+        setLoading(true);
+
     const loadDeals = async () => {
       try {
         const fetched = await DealsServices.fetchDeals();
@@ -34,7 +38,12 @@ const Deals: React.FC<Props> = ({ navigation }) => {
       }
     };
     loadDeals();
-  }, []);
+
+    return () => {
+        isActive = false;
+      };
+      
+  }, []));
 
   if (loading) {
     return (
@@ -51,6 +60,12 @@ const Deals: React.FC<Props> = ({ navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
+    <View style={styles.buttonContainer}>
+      <Button
+        title="＋ Create New Deal"
+        onPress={() => navigation.navigate('NewDealForm')}
+      />
+    </View>
       <Text style={styles.header}>💰 Top Savings</Text>
       {topSavingsDeals.map(deal => (
         <DealCard
@@ -80,6 +95,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+    buttonContainer: {
+        marginBottom: 16,
+        alignSelf: 'stretch',
+    },
 });
 
 export default Deals;
