@@ -118,7 +118,7 @@ const NewDealForm: React.FC = () => {
       <TextInput style={styles.input} value={dealStore} onChangeText={setDealStore} />
 
       <Text style={styles.label}>Deal URL</Text>
-      <TextInput style={styles.input} value={dealUrl} onChangeText={setDealUrl} />
+      <TextInput style={styles.input} value={dealUrl} onChangeText={setDealUrl} keyboardType="url" autoCapitalize="none" />
 
       <Text style={styles.label}>Item Name</Text>
       <TextInput style={styles.input} value={itemName} onChangeText={setItemName} />
