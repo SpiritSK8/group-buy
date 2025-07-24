@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import { ChatNavigationProp, ChatRouteProp } from '../../types/Navigations';
 import ChatServices from '../../services/ChatServices';
 import { Colors } from '../../constants/Colors';
+import { useFocusEffect } from '@react-navigation/native';
 
 type Props = {
     navigation: ChatNavigationProp;
@@ -16,12 +17,49 @@ type Props = {
 const Chat = ({ navigation, route }: Props) => {
     const [messages, setMessages] = useState<IMessage[]>([]);
     const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+    const [groupBuyID, setGroupBuyID] = useState<string>("");
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const { user } = useAuth();
 
     const chatRoomID: string = route.params.chatRoomID;
 
+    useFocusEffect(
+        useCallback(() => {
+            const loadChatData = async () => {
+                setIsLoading(true);
+                try {
+                    const data = await ChatServices.fetchChatData(chatRoomID);
+                    if (data) {
+                        setGroupBuyID(data.groupBuyID);
+                    }
+                } catch (err) {
+                    console.error('Failed to load chat.', err);
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+
+            loadChatData();
+        }, [chatRoomID])
+    );
+
     useLayoutEffect(() => {
+        // Top-right button.
+        navigation.setOptions({
+            headerRight: () =>
+                <TouchableOpacity
+                    onPress={() =>
+                        navigation.navigate("GroupBuySummary", { groupBuyID: groupBuyID })
+                    }
+                    className="w-30 py-2 px-6 mr-2 rounded-xl"
+                    style={{ backgroundColor: Colors.secondary }}
+                >
+                    <Text className='text-l text-center font-medium'>Details</Text>
+                </TouchableOpacity>
+        });
+
+        // Listen to messages.
         const unsubscribe = ChatServices.listenToMessages(
             chatRoomID,
             (newMessages) => {
@@ -36,7 +74,7 @@ const Chat = ({ navigation, route }: Props) => {
         );
 
         return unsubscribe;
-    }, [chatRoomID]);
+    }, [chatRoomID, groupBuyID]);
 
     const onSend = useCallback((message: IMessage) => {
         try {
@@ -52,7 +90,13 @@ const Chat = ({ navigation, route }: Props) => {
         }
     }, [chatRoomID]);
 
-    if (!user?.uid) {
+    if (isLoading) {
+        return (
+            <View className="flex-1 justify-center">
+                <ActivityIndicator size="large" />
+            </View>
+        );
+    } else if (!user?.uid) {
         return (
             <View className="flex-1 justify-center h-full" style={{ backgroundColor: Colors.light.background }}>
                 <Text>You must be logged in to chat.</Text>
