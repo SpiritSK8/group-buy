@@ -30,6 +30,7 @@ export type RegisterNavigationProp = NativeStackNavigationProp<
 export type ChatStackParamList = {
     ChatList: undefined,
     Chat: { chatRoomID: string };
+    GroupBuySummary: { groupBuyID: string };
 };
 
 export type ChatListNavigationProp = NativeStackNavigationProp<
@@ -43,6 +44,13 @@ export type ChatNavigationProp = NativeStackNavigationProp<
 >;
 
 export type ChatRouteProp = RouteProp<ChatStackParamList, 'Chat'>;
+
+export type GroupBuySummaryNavigationProp = NativeStackNavigationProp<
+    ChatStackParamList,
+    'GroupBuySummary'
+>;
+
+export type GroupBuySummaryRouteProp = RouteProp<ChatStackParamList, 'GroupBuySummary'>;
 
 // ---------------- DealStack ----------------
 export type DealStackParamList = {
