@@ -1,5 +1,5 @@
-import { View, Text, TextInput, Button, ActivityIndicator } from 'react-native';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { View, Text, TextInput, Button, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 
 import { GroupBuyNavigationProp, GroupBuyRouteProp } from '../../types/Navigations';
 import { useAuth } from '../../context/AuthContext';
@@ -25,6 +25,7 @@ const GroupBuy = ({ navigation, route }: Props) => {
     const [location, setLocation] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [hasJoined, setHasJoined] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useLayoutEffect(() => {
         navigation.setOptions({ title: 'Join GroupBuy ' + route.params.groupBuyID });
@@ -52,6 +53,21 @@ const GroupBuy = ({ navigation, route }: Props) => {
 
         fetchData();
     }, []);
+
+    const onSubmit = async (uid: string) => {
+        setIsSubmitting(true);
+
+        // Validate fields
+        if (!itemsContributed) {
+            Alert.alert('Error', 'Please fill in how many items you want to buy.');
+            setIsSubmitting(false);
+            return;
+        }
+
+        await GroupBuyServices.joinGroupBuy(uid, route.params.groupBuyID, parseInt(itemsContributed));
+        Alert.alert("Success", "Check your newly joined GroupBuy in Chats!");
+        navigation.goBack();
+    };
 
     if (!user?.uid) {
         return (
@@ -83,7 +99,7 @@ const GroupBuy = ({ navigation, route }: Props) => {
 
             <Text>Number of items you're contributing:</Text>
             <TextInput
-                className="border p-2 mb-3"
+                className="border p-2 mb-3 rounded-xl"
                 keyboardType="numeric"
                 value={itemsContributed}
                 onChangeText={setItemsContributed}
@@ -105,7 +121,7 @@ const GroupBuy = ({ navigation, route }: Props) => {
 
             <Text className="mt-4">Preferred Time Range:</Text>
             <TextInput
-                className="border p-2 mb-3"
+                className="border p-2 mb-3 rounded-xl"
                 placeholder="e.g. 2-4 PM"
                 value={timeRange}
                 onChangeText={setTimeRange}
@@ -113,17 +129,21 @@ const GroupBuy = ({ navigation, route }: Props) => {
 
             <Text>Preferred Meetup Location:</Text>
             <TextInput
-                className="border p-2 mb-6"
+                className="border p-2 mb-6 rounded-xl"
                 placeholder="e.g. Clementi MRT"
                 value={location}
                 onChangeText={setLocation}
             />
 
-            <Button title="Submit" onPress={() => {
-                // Do something with data here (e.g., save or send to backend)
-                GroupBuyServices.joinGroupBuy(user.uid, route.params.groupBuyID);
-                navigation.goBack();
-            }} />
+            {isSubmitting ?
+                <View className="w-full p-3 rounded-xl items-center bg-gray-400">
+                    <Text className="text-l text-white">Joining GroupBuy...</Text>
+                </View>
+                :
+                <TouchableOpacity className="w-full p-3 rounded-xl items-center bg-blue-400" onPress={() => onSubmit(user.uid)}>
+                    <Text>Submit</Text>
+                </TouchableOpacity>
+            }
         </View>
     );
 };

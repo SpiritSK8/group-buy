@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { View, Text, TextInput, Button, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { DealContributionFormNavigationProp, DealContributionFormRouteProp } from '../../types/Navigations';
@@ -24,6 +24,15 @@ const DealContributionForm = ({ navigation, route }: { navigation: DealContribut
             </View>
         );
     }
+
+    const handleSubmit = () => {
+        if (!itemsContributed || !purchaseDate || !timeRange || !location) {
+            Alert.alert('Error', 'Please fill in all fields.');
+            return;
+        }
+        GroupBuyServices.createAndJoinGroupBuy(user.uid, deal.dealID, parseInt(itemsContributed));
+        navigation.goBack();
+    };
 
     return (
         <View className="p-4">
@@ -67,11 +76,7 @@ const DealContributionForm = ({ navigation, route }: { navigation: DealContribut
                 onChangeText={setLocation}
             />
 
-            <Button title="Submit" onPress={() => {
-                // Do something with data here (e.g., save or send to backend)
-                GroupBuyServices.createAndJoinGroupBuy(user.uid, deal.dealID);
-                navigation.goBack();
-            }} />
+            <Button title="Submit" onPress={handleSubmit} />
         </View>
     );
 };
