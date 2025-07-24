@@ -8,11 +8,12 @@ import { ChatData, ChatMessage } from '../types/ChatTypes';
 
 class ChatServices {
     // Creates a chat room and returns the id of the chat room.
-    static async createAndJoinChatRoom(userUID: string, name: string, photoURL: string): Promise<string | null> {
+    static async createAndJoinChatRoom(userUID: string, name: string, photoURL: string, groupBuyID: string): Promise<string | null> {
         try {
             return (await addDoc(collection(database, 'chats'),
                 {
                     name,
+                    groupBuyID,
                     photoURL,
                     participants: [userUID],
                     lastMessage: '',
@@ -36,11 +37,12 @@ class ChatServices {
             if (await this.isUserInChatRoom(userUID, chatRoomID)) {
                 // User is already inside this chat room.
                 return;
-            } else {
-                const participants = chatDoc.data().participants;
-                participants.push(userUID);
-                await updateDoc(doc(database, 'chats', chatRoomID), { participants });
             }
+
+            const participants = chatDoc.data().participants;
+            participants.push(userUID);
+            await updateDoc(doc(database, 'chats', chatRoomID), { participants });
+
         } catch (error: any) {
             console.error('An error occured. ' + error.message);
         }
@@ -132,12 +134,13 @@ class ChatServices {
         return unsubscribe;
     }
 
-    static async fetchChatData(chatRoomID: string) {
+    static async fetchChatData(chatRoomID: string): Promise<ChatData | null> {
         const chatDoc = await getDoc(doc(database, 'chats', chatRoomID));
         if (chatDoc.exists()) {
             const data = chatDoc.data();
             return {
                 name: data.name,
+                groupBuyID: data.groupBuyID,
                 photoURL: data.photoURL,
                 participants: data.participants,
                 lastMessage: data.lastMessage,
