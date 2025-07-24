@@ -4,6 +4,7 @@ import React from 'react';
 
 import ChatList from '../screens/Chat/ChatList';
 import Chat from '../screens/Chat/Chat';
+import GroupBuySummary from '../screens/GroupBuySummary/GroupBuySummary';
 import { ChatStackParamList } from '../types/Navigations';
 import { Colors } from '../constants/Colors';
 
@@ -20,6 +21,7 @@ const ChatStack = () => {
         }}>
             <Stack.Screen name="ChatList" component={ChatList} />
             <Stack.Screen name="Chat" component={Chat} />
+            <Stack.Screen name="GroupBuySummary" component={GroupBuySummary} />
         </Stack.Navigator>
     )
 }
