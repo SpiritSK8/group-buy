@@ -13,10 +13,11 @@ import { useAuth } from '../../../context/AuthContext';
 
 type Props = {
     groupBuyID: string,
+    refreshTrigger: number;
     onPress?: () => void
 }
 
-const GroupBuyCard = ({ groupBuyID, onPress }: Props) => {
+const GroupBuyCard = ({ groupBuyID, refreshTrigger, onPress }: Props) => {
     const { user } = useAuth();
 
     const [groupBuy, setGroupBuy] = useState<GroupBuyDetails | null>(null);
@@ -61,7 +62,7 @@ const GroupBuyCard = ({ groupBuyID, onPress }: Props) => {
         }
 
         fetchData();
-    }, []);
+    }, [refreshTrigger]);
 
     if (isLoading) {
         return <LoadingGroupBuyCard />;
@@ -73,6 +74,10 @@ const GroupBuyCard = ({ groupBuyID, onPress }: Props) => {
                 <Text>Failed to fetch data.</Text>
             </View>
         );
+    }
+
+    if (hasJoined) {
+        return null;
     }
 
     return (
@@ -131,18 +136,12 @@ const GroupBuyCard = ({ groupBuyID, onPress }: Props) => {
                 </View>
             </View>
 
-            {hasJoined ?
-                <View className="w-full p-3 rounded-2xl items-center bg-gray-400">
-                    <Text className="text-l text-white">You have joined this GroupBuy</Text>
-                </View>
-                :
-                <TouchableOpacity
-                    onPress={onPress}
-                    className="w-full p-3 rounded-2xl items-center"
-                    style={{ backgroundColor: Colors.primary }}>
-                    <Text className="font-semibold text-l text-white">Join GroupBuy</Text>
-                </TouchableOpacity>
-            }
+            <TouchableOpacity
+                onPress={onPress}
+                className="w-full p-3 rounded-2xl items-center"
+                style={{ backgroundColor: Colors.primary }}>
+                <Text className="font-semibold text-l text-white">Join GroupBuy</Text>
+            </TouchableOpacity>
         </View>
     );
 };
