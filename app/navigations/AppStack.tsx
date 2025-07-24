@@ -36,7 +36,7 @@ const AppStack = () => {
                 tabBarInactiveTintColor: Colors.light.iconInactive,
             })}
         >
-            <Tab.Screen name="Deals" component={DealsStack}></Tab.Screen>
+            <Tab.Screen name="Deals" component={DealsStack} options={{ headerShown: false }} />
             <Tab.Screen name="GroupBuys" component={GroupBuyStack} options={{ headerShown: false }} />
             <Tab.Screen name="Chats" component={ChatStack} options={{ headerShown: false }} />
             <Tab.Screen name="Settings" component={Settings} />
