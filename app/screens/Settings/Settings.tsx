@@ -35,10 +35,14 @@ const Settings = ({ navigation }: Props) => {
     useEffect(() => {
         const fetchUserData = async () => {
             if (!uid) return;
-            setDisplayName(await UserServices.getUserDisplayName(uid) || '');
-            setPhotoURL(await UserServices.getUserPhotoURL(uid) || '')
-            setPrevDisplayName(displayName);
-            setPrevPhotoURL(photoURL);
+            const name = await UserServices.getUserDisplayName(uid) || '';
+            setDisplayName(name);
+            setPrevDisplayName(name);
+
+            const photo = await UserServices.getUserPhotoURL(uid) || '';
+            setPhotoURL(photo)
+            setPrevPhotoURL(photo);
+            
             setLoading(false);
         };
 
