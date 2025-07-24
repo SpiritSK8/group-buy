@@ -4,32 +4,36 @@ import { Deal } from '../types/Deal';
 import { Alert } from 'react-native';
 import ChatServices from './ChatServices';
 import DealsServices from './DealsServices';
-import { GroupBuyDetails } from '../types/GroupBuyTypes';
+import { Contribution, GroupBuyDetails } from '../types/GroupBuyTypes';
 
 class GroupBuyServices {
     /**
      * @param dealID The ID of the deal this GroupBuy is based of.
      * @returns a Promise containing the ID of the created GroupBuy. Returns null if failed.
      */
-    static async createAndJoinGroupBuy(userUID: string, dealID: string): Promise<string | null> {
+    static async createAndJoinGroupBuy(userUID: string, dealID: string, amount: number): Promise<string | null> {
         try {
             const deal = await DealsServices.fetchDeal(dealID);
             if (!deal) {
                 throw new Error('Deal not found.');
             }
 
-            const chatRoomID = await ChatServices.createAndJoinChatRoom(userUID, deal.dealName, ''); // TODO: Fill photo URL.
+            const contribution: Contribution = { userUID, amount };
+
+            const data = {
+                dealID: dealID,
+                participants: [userUID],
+                contributions: [contribution],
+                createdAt: serverTimestamp()
+            };
+            const doc = await addDoc(collection(database, 'groupBuys'), data);
+
+            const chatRoomID = await ChatServices.createAndJoinChatRoom(userUID, deal.dealName, '', doc.id); // TODO: Fill photo URL.
             if (!chatRoomID) {
                 throw new Error('Error creating chat room.');
             }
 
-            const data = {
-                dealID: dealID,
-                chatRoomID: chatRoomID,
-                participants: [userUID],
-                createdAt: serverTimestamp()
-            };
-            const doc = await addDoc(collection(database, 'groupBuys'), data);
+            await updateDoc(doc, { chatRoomID: chatRoomID });
 
             return doc.id;
         } catch (error: any) {
@@ -38,7 +42,7 @@ class GroupBuyServices {
         }
     }
 
-    static async joinGroupBuy(userUID: string, groupBuyID: string): Promise<void> {
+    static async joinGroupBuy(userUID: string, groupBuyID: string, contribution: number): Promise<void> {
         try {
             const groupBuyDoc = await getDoc(doc(database, 'groupBuys', groupBuyID));
             if (!groupBuyDoc.exists()) {
@@ -49,14 +53,17 @@ class GroupBuyServices {
             if (await this.isUserInGroupBuy(userUID, groupBuyID)) {
                 // User is already inside this GroupBuy.
                 return;
-            } else {
-                const participants = groupBuyDoc.data().participants;
-                participants.push(userUID);
-                await updateDoc(doc(database, 'groupBuys', groupBuyID), { participants });
-                await ChatServices.joinChatRoom(userUID, groupBuyDoc.data().chatRoomID);
             }
-        } catch (error) {
-            console.error('An error occured.');
+
+            const participants = groupBuyDoc.data().participants;
+            participants.push(userUID);
+            const contributions = groupBuyDoc.data().contributions;
+            contributions.push({ userUID: userUID, amount: contribution });
+            await updateDoc(doc(database, 'groupBuys', groupBuyID), { participants, contributions });
+            await ChatServices.joinChatRoom(userUID, groupBuyDoc.data().chatRoomID);
+
+        } catch (error: any) {
+            console.error('An error occured.', error.message);
         }
     }
 
@@ -83,6 +90,7 @@ class GroupBuyServices {
                 id: groupBuyDoc.id,
                 dealID: data.dealID,
                 participants: data.participants,
+                contributions: data.contributions,
                 chatRoomID: data.chatRoomID
             };
         }
@@ -104,6 +112,7 @@ class GroupBuyServices {
                     id: docSnap.id,
                     dealID: data.dealID,
                     participants: data.participants,
+                    contributions: data.contributions,
                     chatRoomID: data.chatGroupID,
                 } as GroupBuyDetails;
             })
