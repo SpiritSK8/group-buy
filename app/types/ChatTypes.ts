@@ -15,6 +15,7 @@ export interface ChatUser {
 
 export interface ChatData {
     name: string;
+    groupBuyID: string,
     photoURL: string;
     participants: string[];
     lastMessage: string;
