@@ -1,10 +1,10 @@
-import { collection, addDoc, serverTimestamp, doc, getDoc, getDocs, query, orderBy, DocumentData, setDoc, updateDoc } from 'firebase/firestore';
-import { database } from '../firebaseConfig';
-import { Deal } from '../types/Deal';
-import { Alert } from 'react-native';
-import ChatServices from './ChatServices';
-import DealsServices from './DealsServices';
-import { Contribution, GroupBuyDetails } from '../types/GroupBuyTypes';
+import { collection, addDoc, serverTimestamp, doc, getDoc, getDocs, query, orderBy, DocumentData, setDoc, updateDoc } from "firebase/firestore";
+import { database } from "../firebaseConfig";
+import { Deal } from "../types/Deal";
+import { Alert } from "react-native";
+import ChatServices from "./ChatServices";
+import DealsServices from "./DealsServices";
+import { Contribution, GroupBuyDetails } from "../types/GroupBuyTypes";
 
 class GroupBuyServices {
     /**
@@ -15,7 +15,7 @@ class GroupBuyServices {
         try {
             const deal = await DealsServices.fetchDeal(dealID);
             if (!deal) {
-                throw new Error('Deal not found.');
+                throw new Error("Deal not found.");
             }
 
             const contribution: Contribution = { userUID, amount };
@@ -25,31 +25,31 @@ class GroupBuyServices {
                 ownerUID: userUID,
                 participants: [userUID],
                 contributions: [contribution],
-                status: 'active' as const,
+                status: "active" as const,
                 acceptingNewMembers: true,
                 createdAt: serverTimestamp()
             };
-            const doc = await addDoc(collection(database, 'groupBuys'), data);
+            const doc = await addDoc(collection(database, "groupBuys"), data);
 
-            const chatRoomID = await ChatServices.createAndJoinChatRoom(userUID, deal.dealName, '', doc.id); // TODO: Fill photo URL.
+            const chatRoomID = await ChatServices.createAndJoinChatRoom(userUID, deal.dealName, "", doc.id); // TODO: Fill photo URL.
             if (!chatRoomID) {
-                throw new Error('Error creating chat room.');
+                throw new Error("Error creating chat room.");
             }
 
             await updateDoc(doc, { chatRoomID: chatRoomID });
 
             return doc.id;
         } catch (error: any) {
-            Alert.alert('Error creating GroupBuy', error.message);
+            Alert.alert("Error creating GroupBuy", error.message);
             return null;
         }
     }
 
     static async joinGroupBuy(userUID: string, groupBuyID: string, contribution: number): Promise<void> {
         try {
-            const groupBuyDoc = await getDoc(doc(database, 'groupBuys', groupBuyID));
+            const groupBuyDoc = await getDoc(doc(database, "groupBuys", groupBuyID));
             if (!groupBuyDoc.exists()) {
-                // The specified GroupBuy doesn't exist.
+                // The specified GroupBuy doesn"t exist.
                 return;
             }
 
@@ -62,17 +62,17 @@ class GroupBuyServices {
             participants.push(userUID);
             const contributions = groupBuyDoc.data().contributions;
             contributions.push({ userUID: userUID, amount: contribution });
-            await updateDoc(doc(database, 'groupBuys', groupBuyID), { participants, contributions });
+            await updateDoc(doc(database, "groupBuys", groupBuyID), { participants, contributions });
             await ChatServices.joinChatRoom(userUID, groupBuyDoc.data().chatRoomID);
 
         } catch (error: any) {
-            console.error('An error occured.', error.message);
+            console.error("An error occured.", error.message);
         }
     }
 
     static async isUserInGroupBuy(userUID: string, groupBuyID: string): Promise<boolean> {
         try {
-            const groupBuyDoc = await getDoc(doc(database, 'groupBuys', groupBuyID));
+            const groupBuyDoc = await getDoc(doc(database, "groupBuys", groupBuyID));
             if (groupBuyDoc.exists()) {
                 const participants = groupBuyDoc.data().participants;
                 return participants.includes(userUID);
@@ -80,13 +80,13 @@ class GroupBuyServices {
 
             return false;
         } catch (error) {
-            console.error('An error occured.');
+            console.error("An error occured.");
             return false;
         }
     }
 
     static async fetchGroupBuy(groupBuyID: string): Promise<GroupBuyDetails | null> {
-        const groupBuyDoc = await getDoc(doc(database, 'groupBuys', groupBuyID));
+        const groupBuyDoc = await getDoc(doc(database, "groupBuys", groupBuyID));
         if (groupBuyDoc.exists()) {
             const data = groupBuyDoc.data();
             return {
@@ -96,7 +96,7 @@ class GroupBuyServices {
                 participants: data.participants,
                 contributions: data.contributions,
                 chatRoomID: data.chatRoomID,
-                status: data.status || 'active',
+                status: data.status || "active",
                 acceptingNewMembers: data.acceptingNewMembers !== undefined ? data.acceptingNewMembers : true
             };
         }
@@ -105,8 +105,8 @@ class GroupBuyServices {
 
     static async fetchAllGroupBuy(): Promise<GroupBuyDetails[]> {
         const q = query(
-            collection(database, 'groupBuys'),
-            orderBy('createdAt', 'desc')
+            collection(database, "groupBuys"),
+            orderBy("createdAt", "desc")
         );
 
         const snapshot = await getDocs(q);
@@ -121,7 +121,7 @@ class GroupBuyServices {
                     participants: data.participants,
                     contributions: data.contributions,
                     chatRoomID: data.chatRoomID,
-                    status: data.status || 'active',
+                    status: data.status || "active",
                     acceptingNewMembers: data.acceptingNewMembers !== undefined ? data.acceptingNewMembers : true
                 } as GroupBuyDetails;
             })
@@ -132,36 +132,36 @@ class GroupBuyServices {
 
     static async updateUserContribution(groupBuyID: string, userUID: string, newAmount: number): Promise<void> {
         try {
-            const groupBuyDoc = await getDoc(doc(database, 'groupBuys', groupBuyID));
+            const groupBuyDoc = await getDoc(doc(database, "groupBuys", groupBuyID));
             if (!groupBuyDoc.exists()) {
-                throw new Error('GroupBuy not found.');
+                throw new Error("GroupBuy not found.");
             }
 
             const data = groupBuyDoc.data();
             const contributions = data.contributions as Contribution[];
 
-            // Find and update the user's contribution
+            // Find and update the user"s contribution
             const updatedContributions = contributions.map(contribution =>
                 contribution.userUID === userUID
                     ? { ...contribution, amount: newAmount }
                     : contribution
             );
 
-            await updateDoc(doc(database, 'groupBuys', groupBuyID), {
+            await updateDoc(doc(database, "groupBuys", groupBuyID), {
                 contributions: updatedContributions
             });
 
         } catch (error: any) {
-            console.error('Error updating contribution:', error);
+            console.error("Error updating contribution:", error);
             throw error;
         }
     }
 
     static async exitGroupBuy(userUID: string, groupBuyID: string): Promise<void> {
         try {
-            const groupBuyDoc = await getDoc(doc(database, 'groupBuys', groupBuyID));
+            const groupBuyDoc = await getDoc(doc(database, "groupBuys", groupBuyID));
             if (!groupBuyDoc.exists()) {
-                throw new Error('GroupBuy not found.');
+                throw new Error("GroupBuy not found.");
             }
             const data = groupBuyDoc.data();
             const participants = data.participants as string[];
@@ -171,7 +171,7 @@ class GroupBuyServices {
             const updatedParticipants = participants.filter(uid => uid !== userUID);
             const updatedContributions = contributions.filter(contribution => contribution.userUID !== userUID);
 
-            await updateDoc(doc(database, 'groupBuys', groupBuyID), {
+            await updateDoc(doc(database, "groupBuys", groupBuyID), {
                 participants: updatedParticipants,
                 contributions: updatedContributions
             });
@@ -179,68 +179,68 @@ class GroupBuyServices {
             // Leave the chat room
             await ChatServices.leaveChatRoom(userUID, data.chatRoomID);
         } catch (error: any) {
-            console.error('Error exiting GroupBuy:', error);
+            console.error("Error exiting GroupBuy:", error);
             throw error;
         }
     }
 
     static async toggleAcceptingNewMembers(groupBuyID: string, ownerUID: string): Promise<void> {
         try {
-            const groupBuyDoc = await getDoc(doc(database, 'groupBuys', groupBuyID));
+            const groupBuyDoc = await getDoc(doc(database, "groupBuys", groupBuyID));
             if (!groupBuyDoc.exists()) {
-                throw new Error('GroupBuy not found.');
+                throw new Error("GroupBuy not found.");
             }
 
             const data = groupBuyDoc.data();
             if (data.ownerUID !== ownerUID) {
-                throw new Error('Only the owner can modify this setting.');
+                throw new Error("Only the owner can modify this setting.");
             }
 
-            await updateDoc(doc(database, 'groupBuys', groupBuyID), {
+            await updateDoc(doc(database, "groupBuys", groupBuyID), {
                 acceptingNewMembers: !data.acceptingNewMembers
             });
         } catch (error: any) {
-            console.error('Error toggling new member acceptance:', error);
+            console.error("Error toggling new member acceptance:", error);
             throw error;
         }
     }
 
     static async finishGroupBuy(groupBuyID: string, ownerUID: string): Promise<void> {
         try {
-            const groupBuyDoc = await getDoc(doc(database, 'groupBuys', groupBuyID));
+            const groupBuyDoc = await getDoc(doc(database, "groupBuys", groupBuyID));
             if (!groupBuyDoc.exists()) {
-                throw new Error('GroupBuy not found.');
+                throw new Error("GroupBuy not found.");
             }
 
             const data = groupBuyDoc.data();
             if (data.ownerUID !== ownerUID) {
-                throw new Error('Only the owner can finish the GroupBuy.');
+                throw new Error("Only the owner can finish the GroupBuy.");
             }
 
-            await updateDoc(doc(database, 'groupBuys', groupBuyID), {
-                status: 'finished',
+            await updateDoc(doc(database, "groupBuys", groupBuyID), {
+                status: "finished",
                 acceptingNewMembers: false
             });
         } catch (error: any) {
-            console.error('Error finishing GroupBuy:', error);
+            console.error("Error finishing GroupBuy:", error);
             throw error;
         }
     }
 
     static async kickMember(groupBuyID: string, ownerUID: string, memberUID: string): Promise<void> {
         try {
-            const groupBuyDoc = await getDoc(doc(database, 'groupBuys', groupBuyID));
+            const groupBuyDoc = await getDoc(doc(database, "groupBuys", groupBuyID));
             if (!groupBuyDoc.exists()) {
-                throw new Error('GroupBuy not found.');
+                throw new Error("GroupBuy not found.");
             }
 
             const data = groupBuyDoc.data();
             if (data.ownerUID !== ownerUID) {
-                throw new Error('Only the owner can kick members.');
+                throw new Error("Only the owner can kick members.");
             }
 
             if (memberUID === ownerUID) {
-                throw new Error('Owner cannot kick themselves.');
+                throw new Error("Owner cannot kick themselves.");
             }
 
             const participants = data.participants as string[];
@@ -250,7 +250,7 @@ class GroupBuyServices {
             const updatedParticipants = participants.filter(uid => uid !== memberUID);
             const updatedContributions = contributions.filter(contribution => contribution.userUID !== memberUID);
 
-            await updateDoc(doc(database, 'groupBuys', groupBuyID), {
+            await updateDoc(doc(database, "groupBuys", groupBuyID), {
                 participants: updatedParticipants,
                 contributions: updatedContributions
             });
@@ -258,7 +258,7 @@ class GroupBuyServices {
             // Remove member from chat room
             await ChatServices.leaveChatRoom(memberUID, data.chatRoomID);
         } catch (error: any) {
-            console.error('Error kicking member:', error);
+            console.error("Error kicking member:", error);
             throw error;
         }
     }
