@@ -19,6 +19,7 @@ Welcome to the GitHub repository of GroupBuy, made by Team Splitly!
 
 ## **Log**
 
+
 [Log](https://docs.google.com/spreadsheets/d/1RErwj-EsBd2x9dToYT63RZ4eAhD36h_VGefUF7tBrvo/edit?usp=sharing) 
 
 
@@ -81,6 +82,21 @@ npx expo start
 
 <strong>Step 3</strong>: Open Expo Go on your device and scan the QR code.
 
+# Scraper Setup Instructions
+<strong>Step 1</strong>: Assuming you have cloned this repository and opened the group-buy folder, install the following dependencies using Python:
+```
+pip install pytest-playwright
+pip install bs4
+```
+
+<strong>Step 2</strong>: Run the `fairprice_scraper.py`.
+```
+python ./scraper/fairprice_scraper.py
+```
+
+<strong>Step 3</strong>: Wait until the process is finished. A JSON file called `promotions.json` should appear.
+
+<strong>Step 4</strong>: Manually upload these promotions into the app. (Automatic upload will come soon!)
 
 # **Development Plan**
 
