@@ -1,5 +1,5 @@
 import { View, FlatList, ActivityIndicator } from 'react-native';
-import React, { useCallback, useEffect, useReducer, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { GroupBuyListNavigationProp } from '../../types/Navigations';
 
@@ -25,8 +25,7 @@ const GroupBuyList = ({ navigation }: Props) => {
     const [loadingMore, setLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [lastVisible, setLastVisible] = useState<any>(null);
-
-    const [refreshTrigger, forceUpdate] = useReducer(x => x + 1, 0);
+    const [refreshing, setRefreshing] = useState(false);
 
     const isFocused = useIsFocused();
 
@@ -35,7 +34,6 @@ const GroupBuyList = ({ navigation }: Props) => {
             const loadGroupBuys = async () => {
                 setIsLoading(true);
                 try {
-                    forceUpdate();
                     await fetchInitial();
                 } catch (err) {
                     console.error('Failed to load GroupBuys.', err);
@@ -47,14 +45,6 @@ const GroupBuyList = ({ navigation }: Props) => {
             loadGroupBuys();
         }, [])
     );
-
-    if (isLoading) {
-        return (
-            <View className="flex-1 justify-center">
-                <ActivityIndicator size="large" />
-            </View>
-        );
-    }
 
     const fetchInitial = async () => {
         setIsLoading(true);
@@ -91,6 +81,32 @@ const GroupBuyList = ({ navigation }: Props) => {
         setLoadingMore(false);
     };
 
+    const handleRefresh = useCallback(async () => {
+        setRefreshing(true);
+        try {
+            await fetchInitial();
+        } catch (err) {
+            console.error('Failed to refresh GroupBuys.', err);
+        } finally {
+            setRefreshing(false);
+        }
+    }, []);
+
+    const renderGroupBuyCard = useCallback(({ item }: { item: any }) => (
+        <GroupBuyCard
+            groupBuyID={item.id}
+            onPress={() => navigation.navigate('GroupBuy', { groupBuyID: item.id })}
+        />
+    ), [navigation]);
+
+    if (isLoading) {
+        return (
+            <View className="flex-1 justify-center">
+                <ActivityIndicator size="large" />
+            </View>
+        );
+    }
+
     return (
         <View className="flex-1">
             <FlatList
@@ -99,15 +115,9 @@ const GroupBuyList = ({ navigation }: Props) => {
                 data={items}
                 extraData={items}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item }) =>
-                    <GroupBuyCard
-                        groupBuyID={item.id}
-                        refreshTrigger={refreshTrigger}
-                        onPress={() => navigation.navigate('GroupBuy', { groupBuyID: item.id })}
-                    />
-                }
-                refreshing={isLoading}
-                onRefresh={forceUpdate}
+                renderItem={renderGroupBuyCard}
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
                 onEndReached={fetchMore}
                 onEndReachedThreshold={0.5}
                 ListFooterComponent={loadingMore ? <ActivityIndicator /> : null}
@@ -117,3 +127,4 @@ const GroupBuyList = ({ navigation }: Props) => {
 };
 
 export default GroupBuyList;
+
