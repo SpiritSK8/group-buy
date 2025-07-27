@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { TouchableOpacity, View, Image, Text, ActivityIndicator, Alert } from 'react-native';
 
 import * as Progress from 'react-native-progress';
@@ -12,21 +12,20 @@ import GroupBuyServices from '../../../services/GroupBuyServices';
 import { useAuth } from '../../../context/AuthContext';
 
 type Props = {
-    groupBuyID: string,
-    refreshTrigger: number;
+    groupBuyID: string;
     onPress?: () => void
 }
 
-const GroupBuyCard = ({ groupBuyID, refreshTrigger, onPress }: Props) => {
+const GroupBuyCard = memo(({ groupBuyID, onPress }: Props) => {
     const { user } = useAuth();
 
     const [groupBuy, setGroupBuy] = useState<GroupBuyDetails | null>(null);
     const [deal, setDeal] = useState<Deal | null>(null);
     const [hasJoined, setHasJoined] = useState(false);
 
-    const [title, setTitle] = useState<string>('Title');
-    const [location, setLocation] = useState<string>('Location');
-    const [endTime, setEndTime] = useState<string>('End Time');
+    const [title, setTitle] = useState<string>("Title");
+    const [location, setLocation] = useState<string>("Location");
+    const [endTime, setEndTime] = useState<string>("End Time");
     const [numParticipants, setNumParticipants] = useState<number>(0);
     const [total, setTotal] = useState<number>(0);
     const [target, setTarget] = useState<number>(0);
@@ -53,16 +52,15 @@ const GroupBuyCard = ({ groupBuyID, refreshTrigger, onPress }: Props) => {
                 setGroupBuy(fetchedGroupBuy);
                 setDeal(fetchedDeal);
                 setHasJoined(isUserIn);
-
-                setIsLoading(false);
             } catch (error: any) {
                 console.error(error.message);
+            } finally {
                 setIsLoading(false);
             }
         }
 
         fetchData();
-    }, [refreshTrigger]);
+    }, [groupBuyID, user?.uid]);
 
     if (isLoading) {
         return <LoadingGroupBuyCard />;
@@ -144,7 +142,7 @@ const GroupBuyCard = ({ groupBuyID, refreshTrigger, onPress }: Props) => {
             </TouchableOpacity>
         </View>
     );
-};
+});
 
 const LoadingGroupBuyCard = () => {
     return (
@@ -193,4 +191,7 @@ const LoadingGroupBuyCard = () => {
     );
 }
 
+GroupBuyCard.displayName = "GroupBuyCard";
+
 export default GroupBuyCard;
+
