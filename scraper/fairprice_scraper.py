@@ -129,5 +129,5 @@ if __name__ == "__main__":
     promos = asyncio.run(scrape_fairprice_promotions())
     print("Found", len(promos), "product links with bulk buy promotions.")
     with open("promotions.json", "w", encoding="utf-8") as f:
-        f.write(json.dumps(promos, indent=2))
+        f.write(json.dumps(promos, indent=4))
     print("Saved scraped promotions in promotions.json.")
