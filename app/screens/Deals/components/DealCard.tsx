@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Deal } from '../../../types/Deal';
 import { calculateSavings } from '../../../utils/calculateSavings';
 
-export const DealCard = ({ deal, onPress }: { deal: Deal, onPress: () => void }) => {
+export const DealCard = ({ deal, onPress }: { deal: Deal, onPress?: () => void }) => {
     const dealName = deal.dealName;
     const itemName = deal.itemName;
     const originalPrice = deal.itemOrigPrice;
@@ -13,8 +13,14 @@ export const DealCard = ({ deal, onPress }: { deal: Deal, onPress: () => void })
     const store = deal.dealStore;
 
     return (
-        <TouchableOpacity onPress={onPress}>
+        <TouchableOpacity onPress={onPress} activeOpacity={onPress ? 0.3 : 1}>
             <View className="bg-white rounded-xl p-4 mb-4 shadow">
+                <View className="mb-2">
+                    <Text className="text-2xl font-bold">
+                        {dealName}
+                    </Text>
+                </View>
+
                 <View className="flex-row justify-between">
                     <View className="flex-row">
                         <View className="mr-2">
@@ -37,7 +43,9 @@ export const DealCard = ({ deal, onPress }: { deal: Deal, onPress: () => void })
                 </View>
 
                 <View className="mb-3">
-                    <Text className="text-xl">{itemName}</Text>
+                    <Text className="text-xl">
+                        {itemName}
+                    </Text>
                 </View>
 
                 <Text className="text-sm text-blue-500">

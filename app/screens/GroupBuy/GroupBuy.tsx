@@ -28,7 +28,7 @@ const GroupBuy = ({ navigation, route }: Props) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useLayoutEffect(() => {
-        navigation.setOptions({ title: 'Join GroupBuy ' + route.params.groupBuyID });
+        navigation.setOptions({ title: "Join GroupBuy" });
     });
 
     useEffect(() => {
@@ -53,6 +53,11 @@ const GroupBuy = ({ navigation, route }: Props) => {
 
         fetchData();
     }, []);
+
+    const onChanged = (text: string) => {
+        text = text.replace(/\D/g, ""); // Deletes non-digit characters.
+        setItemsContributed(text);
+    }
 
     const onSubmit = async (uid: string) => {
         setIsSubmitting(true);
@@ -102,7 +107,7 @@ const GroupBuy = ({ navigation, route }: Props) => {
                 className="border p-2 mb-3 rounded-xl"
                 keyboardType="numeric"
                 value={itemsContributed}
-                onChangeText={setItemsContributed}
+                onChangeText={onChanged}
             />
 
             {/* <Text>Ideal Date of Purchase:</Text>

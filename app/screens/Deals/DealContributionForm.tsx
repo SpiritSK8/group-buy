@@ -25,6 +25,11 @@ const DealContributionForm = ({ navigation, route }: { navigation: DealContribut
         );
     }
 
+    const onChanged = (text: string) => {
+        text = text.replace(/\D/g, ""); // Deletes non-digit characters.
+        setItemsContributed(text);
+    }
+
     const handleSubmit = () => {
         if (!itemsContributed || !purchaseDate || !timeRange || !location) {
             Alert.alert('Error', 'Please fill in all fields.');
@@ -43,7 +48,7 @@ const DealContributionForm = ({ navigation, route }: { navigation: DealContribut
                 className="border p-2 mb-3"
                 keyboardType="numeric"
                 value={itemsContributed}
-                onChangeText={setItemsContributed}
+                onChangeText={onChanged}
             />
 
             <Text>Ideal Date of Purchase:</Text>
