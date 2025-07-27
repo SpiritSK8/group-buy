@@ -4,6 +4,7 @@
 
 # dependencies
 node_modules/
+*.venv
 
 # Expo
 .expo/
@@ -37,3 +38,7 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# scraper debug & config files
+scraper/fairprice_promotions_scrolled.html
+scraper/*.json
