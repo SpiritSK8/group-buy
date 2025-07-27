@@ -1,4 +1,4 @@
-import { collection, addDoc, serverTimestamp, doc, getDoc, getDocs, query, orderBy, DocumentData, setDoc, updateDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, getDoc, getDocs, query, orderBy, DocumentData, setDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { database } from "../firebaseConfig";
 import { Deal } from "../types/Deal";
 import { Alert } from "react-native";
@@ -26,7 +26,6 @@ class GroupBuyServices {
                 participants: [userUID],
                 contributions: [contribution],
                 status: "active" as const,
-                acceptingNewMembers: true,
                 createdAt: serverTimestamp()
             };
             const doc = await addDoc(collection(database, "groupBuys"), data);
@@ -55,6 +54,11 @@ class GroupBuyServices {
 
             if (await this.isUserInGroupBuy(userUID, groupBuyID)) {
                 // User is already inside this GroupBuy.
+                return;
+            }
+
+            if (groupBuyDoc.data().status !== "active") {
+                // This GroupBuy doesn't accept new members.
                 return;
             }
 
@@ -97,7 +101,6 @@ class GroupBuyServices {
                 contributions: data.contributions,
                 chatRoomID: data.chatRoomID,
                 status: data.status || "active",
-                acceptingNewMembers: data.acceptingNewMembers !== undefined ? data.acceptingNewMembers : true
             };
         }
         return null;
@@ -122,12 +125,24 @@ class GroupBuyServices {
                     contributions: data.contributions,
                     chatRoomID: data.chatRoomID,
                     status: data.status || "active",
-                    acceptingNewMembers: data.acceptingNewMembers !== undefined ? data.acceptingNewMembers : true
                 } as GroupBuyDetails;
             })
         );
 
         return result;
+    }
+
+    static async deleteGroupBuy(groupBuyID: string) {
+        const groupBuyDoc = await getDoc(doc(database, "groupBuys", groupBuyID));
+        if (!groupBuyDoc.exists()) {
+            throw new Error("GroupBuy not found.");
+        }
+
+        const data = groupBuyDoc.data();
+        const chatRoomID = data.chatRoomID;
+
+        await ChatServices.deleteChatRoom(chatRoomID);
+        await deleteDoc(doc(database, "groupBuys", groupBuyID));
     }
 
     static async updateUserContribution(groupBuyID: string, userUID: string, newAmount: number): Promise<void> {
@@ -169,11 +184,18 @@ class GroupBuyServices {
 
             // Remove user from participants and contributions
             const updatedParticipants = participants.filter(uid => uid !== userUID);
-            const updatedContributions = contributions.filter(contribution => contribution.userUID !== userUID);
+            const updatedContributions = data.status === "finished" // If finished, no need to update contribution anymore upon leaving.
+                ? contributions
+                : contributions.filter(contribution => contribution.userUID !== userUID);
+
+            if (updatedContributions.length === 0) {
+                // All members have left. We can delete this GroupBuy.
+                await GroupBuyServices.deleteGroupBuy(groupBuyID);
+            }
 
             await updateDoc(doc(database, "groupBuys", groupBuyID), {
-                participants: updatedParticipants,
-                contributions: updatedContributions
+                contributions: updatedContributions,
+                participants: updatedParticipants
             });
 
             // Leave the chat room
@@ -196,8 +218,9 @@ class GroupBuyServices {
                 throw new Error("Only the owner can modify this setting.");
             }
 
+            const newStatus = data.status === "closed" ? "active" : "closed";
             await updateDoc(doc(database, "groupBuys", groupBuyID), {
-                acceptingNewMembers: !data.acceptingNewMembers
+                status: newStatus
             });
         } catch (error: any) {
             console.error("Error toggling new member acceptance:", error);
@@ -218,8 +241,7 @@ class GroupBuyServices {
             }
 
             await updateDoc(doc(database, "groupBuys", groupBuyID), {
-                status: "finished",
-                acceptingNewMembers: false
+                status: "finished"
             });
         } catch (error: any) {
             console.error("Error finishing GroupBuy:", error);

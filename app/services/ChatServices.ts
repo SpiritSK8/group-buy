@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, DocumentData, getDoc, onSnapshot, orderBy, query, QuerySnapshot, serverTimestamp, setDoc, Timestamp, Unsubscribe, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, DocumentData, getDoc, onSnapshot, orderBy, query, QuerySnapshot, serverTimestamp, setDoc, Timestamp, Unsubscribe, updateDoc } from 'firebase/firestore';
 import { database } from '../firebaseConfig';
 import UserServices from './UserServices';
 
@@ -13,6 +13,7 @@ class ChatServices {
             return (await addDoc(collection(database, 'chats'),
                 {
                     name,
+                    ownerID: userUID,
                     groupBuyID,
                     photoURL,
                     participants: [userUID],
@@ -140,6 +141,7 @@ class ChatServices {
             const data = chatDoc.data();
             return {
                 name: data.name,
+                ownerID: data.ownerID,
                 groupBuyID: data.groupBuyID,
                 photoURL: data.photoURL,
                 participants: data.participants,
@@ -149,6 +151,17 @@ class ChatServices {
         }
 
         return null;
+    }
+
+    static async deleteChatRoom(chatRoomID: string) {
+        const chatDoc = await getDoc(doc(database, "chats", chatRoomID));
+        if (!chatDoc.exists()) {
+            throw new Error("Chat room not found.");
+        }
+
+        const data = chatDoc.data();
+
+        await deleteDoc(doc(database, "chats", chatRoomID));
     }
 
     static async leaveChatRoom(userUID: string, chatRoomID: string): Promise<void> {
