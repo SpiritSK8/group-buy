@@ -150,6 +150,27 @@ class ChatServices {
 
         return null;
     }
+
+    static async leaveChatRoom(userUID: string, chatRoomID: string): Promise<void> {
+        try {
+            const chatDoc = await getDoc(doc(database, 'chats', chatRoomID));
+            if (!chatDoc.exists()) {
+                // The specified chat room doesn't exist.
+                return;
+            }
+
+            const participants = chatDoc.data().participants as string[];
+            const updatedParticipants = participants.filter(uid => uid !== userUID);
+
+            await updateDoc(doc(database, 'chats', chatRoomID), {
+                participants: updatedParticipants
+            });
+
+        } catch (error: any) {
+            console.error('Error leaving chat room:', error.message);
+        }
+    }
+
 }
 
 export default ChatServices;

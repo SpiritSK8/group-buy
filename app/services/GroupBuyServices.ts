@@ -22,8 +22,11 @@ class GroupBuyServices {
 
             const data = {
                 dealID: dealID,
+                ownerUID: userUID,
                 participants: [userUID],
                 contributions: [contribution],
+                status: 'active' as const,
+                acceptingNewMembers: true,
                 createdAt: serverTimestamp()
             };
             const doc = await addDoc(collection(database, 'groupBuys'), data);
@@ -89,9 +92,12 @@ class GroupBuyServices {
             return {
                 id: groupBuyDoc.id,
                 dealID: data.dealID,
+                ownerUID: data.ownerUID || data.participants[0], // Fallback for existing data
                 participants: data.participants,
                 contributions: data.contributions,
-                chatRoomID: data.chatRoomID
+                chatRoomID: data.chatRoomID,
+                status: data.status || 'active',
+                acceptingNewMembers: data.acceptingNewMembers !== undefined ? data.acceptingNewMembers : true
             };
         }
         return null;
@@ -111,14 +117,150 @@ class GroupBuyServices {
                 return {
                     id: docSnap.id,
                     dealID: data.dealID,
+                    ownerUID: data.ownerUID || data.participants[0], // Fallback for existing data
                     participants: data.participants,
                     contributions: data.contributions,
-                    chatRoomID: data.chatGroupID,
+                    chatRoomID: data.chatRoomID,
+                    status: data.status || 'active',
+                    acceptingNewMembers: data.acceptingNewMembers !== undefined ? data.acceptingNewMembers : true
                 } as GroupBuyDetails;
             })
         );
 
         return result;
+    }
+
+    static async updateUserContribution(groupBuyID: string, userUID: string, newAmount: number): Promise<void> {
+        try {
+            const groupBuyDoc = await getDoc(doc(database, 'groupBuys', groupBuyID));
+            if (!groupBuyDoc.exists()) {
+                throw new Error('GroupBuy not found.');
+            }
+
+            const data = groupBuyDoc.data();
+            const contributions = data.contributions as Contribution[];
+
+            // Find and update the user's contribution
+            const updatedContributions = contributions.map(contribution =>
+                contribution.userUID === userUID
+                    ? { ...contribution, amount: newAmount }
+                    : contribution
+            );
+
+            await updateDoc(doc(database, 'groupBuys', groupBuyID), {
+                contributions: updatedContributions
+            });
+
+        } catch (error: any) {
+            console.error('Error updating contribution:', error);
+            throw error;
+        }
+    }
+
+    static async exitGroupBuy(userUID: string, groupBuyID: string): Promise<void> {
+        try {
+            const groupBuyDoc = await getDoc(doc(database, 'groupBuys', groupBuyID));
+            if (!groupBuyDoc.exists()) {
+                throw new Error('GroupBuy not found.');
+            }
+            const data = groupBuyDoc.data();
+            const participants = data.participants as string[];
+            const contributions = data.contributions as Contribution[];
+
+            // Remove user from participants and contributions
+            const updatedParticipants = participants.filter(uid => uid !== userUID);
+            const updatedContributions = contributions.filter(contribution => contribution.userUID !== userUID);
+
+            await updateDoc(doc(database, 'groupBuys', groupBuyID), {
+                participants: updatedParticipants,
+                contributions: updatedContributions
+            });
+
+            // Leave the chat room
+            await ChatServices.leaveChatRoom(userUID, data.chatRoomID);
+        } catch (error: any) {
+            console.error('Error exiting GroupBuy:', error);
+            throw error;
+        }
+    }
+
+    static async toggleAcceptingNewMembers(groupBuyID: string, ownerUID: string): Promise<void> {
+        try {
+            const groupBuyDoc = await getDoc(doc(database, 'groupBuys', groupBuyID));
+            if (!groupBuyDoc.exists()) {
+                throw new Error('GroupBuy not found.');
+            }
+
+            const data = groupBuyDoc.data();
+            if (data.ownerUID !== ownerUID) {
+                throw new Error('Only the owner can modify this setting.');
+            }
+
+            await updateDoc(doc(database, 'groupBuys', groupBuyID), {
+                acceptingNewMembers: !data.acceptingNewMembers
+            });
+        } catch (error: any) {
+            console.error('Error toggling new member acceptance:', error);
+            throw error;
+        }
+    }
+
+    static async finishGroupBuy(groupBuyID: string, ownerUID: string): Promise<void> {
+        try {
+            const groupBuyDoc = await getDoc(doc(database, 'groupBuys', groupBuyID));
+            if (!groupBuyDoc.exists()) {
+                throw new Error('GroupBuy not found.');
+            }
+
+            const data = groupBuyDoc.data();
+            if (data.ownerUID !== ownerUID) {
+                throw new Error('Only the owner can finish the GroupBuy.');
+            }
+
+            await updateDoc(doc(database, 'groupBuys', groupBuyID), {
+                status: 'finished',
+                acceptingNewMembers: false
+            });
+        } catch (error: any) {
+            console.error('Error finishing GroupBuy:', error);
+            throw error;
+        }
+    }
+
+    static async kickMember(groupBuyID: string, ownerUID: string, memberUID: string): Promise<void> {
+        try {
+            const groupBuyDoc = await getDoc(doc(database, 'groupBuys', groupBuyID));
+            if (!groupBuyDoc.exists()) {
+                throw new Error('GroupBuy not found.');
+            }
+
+            const data = groupBuyDoc.data();
+            if (data.ownerUID !== ownerUID) {
+                throw new Error('Only the owner can kick members.');
+            }
+
+            if (memberUID === ownerUID) {
+                throw new Error('Owner cannot kick themselves.');
+            }
+
+            const participants = data.participants as string[];
+            const contributions = data.contributions as Contribution[];
+
+            // Remove member from participants and contributions
+            const updatedParticipants = participants.filter(uid => uid !== memberUID);
+            const updatedContributions = contributions.filter(contribution => contribution.userUID !== memberUID);
+
+            await updateDoc(doc(database, 'groupBuys', groupBuyID), {
+                participants: updatedParticipants,
+                contributions: updatedContributions
+            });
+
+            // Remove member from chat room
+            await ChatServices.leaveChatRoom(memberUID, data.chatRoomID);
+        } catch (error: any) {
+            console.error('Error kicking member:', error);
+            throw error;
+        }
     }
 }
 
