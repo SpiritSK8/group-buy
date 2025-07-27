@@ -5,9 +5,6 @@ import AuthStack from './navigations/AuthStack';
 import AppStack from './navigations/AppStack';
 
 import './global.css';
-import { SafeAreaView } from 'react-native';
-import { Colors } from './constants/Colors';
-import { Fragment } from 'react';
 
 export default function App() {
     return (
