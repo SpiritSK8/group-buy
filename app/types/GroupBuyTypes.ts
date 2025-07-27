@@ -3,7 +3,7 @@ export type Contribution = {
     amount: number;
 };
 
-export type GroupBuyStatus = 'active' | 'closed' | 'finished';
+export type GroupBuyStatus = "active" | "closed" | "finished";
 
 export interface GroupBuyDetails {
     id: string;
@@ -13,6 +13,5 @@ export interface GroupBuyDetails {
     contributions: Contribution[];
     chatRoomID: string;
     status: GroupBuyStatus;
-    acceptingNewMembers: boolean;
 }
 
