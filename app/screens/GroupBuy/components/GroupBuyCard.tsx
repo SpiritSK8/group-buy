@@ -74,7 +74,7 @@ const GroupBuyCard = memo(({ groupBuyID, onPress }: Props) => {
         );
     }
 
-    if (hasJoined) {
+    if (hasJoined || groupBuy.status !== "active") {
         return null;
     }
 
@@ -105,6 +105,11 @@ const GroupBuyCard = memo(({ groupBuyID, onPress }: Props) => {
 
             <View className="mb-4">
                 <Text className="text-gray-600 mb-1">Participants: {groupBuy.participants.length}</Text>
+            </View>
+
+            {/*
+            <View className="mb-4">
+                <Text className="text-gray-600 mb-1">Participants: {groupBuy.participants.length}</Text>
                 <View className="flex-row">
                     <Progress.Bar
                         progress={0.75}
@@ -133,6 +138,7 @@ const GroupBuyCard = memo(({ groupBuyID, onPress }: Props) => {
                         className="flex-1" />
                 </View>
             </View>
+            */}
 
             <TouchableOpacity
                 onPress={onPress}
@@ -141,12 +147,13 @@ const GroupBuyCard = memo(({ groupBuyID, onPress }: Props) => {
                 <Text className="font-semibold text-l text-white">Join GroupBuy</Text>
             </TouchableOpacity>
         </View>
+
     );
 });
 
 const LoadingGroupBuyCard = () => {
     return (
-        <View className="self-center bg-white mt-10 w-full h-60 px-4 py-5 rounded-2xl shadow justify-center">
+        <View className="self-center bg-white mt-10 w-full h-40 px-4 py-5 rounded-2xl shadow justify-center">
             <View className="flex-row mb-12 mr-16">
                 <Progress.Bar
                     indeterminate={true}
@@ -174,6 +181,7 @@ const LoadingGroupBuyCard = () => {
                 </View>
             </View>
 
+            {/*
             <View className="mb-8">
                 <View className="flex-row">
                     <Progress.Bar
@@ -187,6 +195,7 @@ const LoadingGroupBuyCard = () => {
                         className="flex-1" />
                 </View>
             </View>
+            */}
         </View>
     );
 }
