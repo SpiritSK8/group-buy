@@ -273,7 +273,13 @@ const GroupBuySummary = ({ navigation, route }: Props) => {
                         </View>
                     </View>
 
-                    <View className="flex-row justify-between items-center mb-4">
+                    <View className="mb-3 p-2">
+                        {deal &&
+                            <DealCard deal={deal} />
+                        }
+                    </View>
+
+                    <View className="border-t border-gray-200 pt-4 flex-row justify-between items-center mb-4">
                         <View>
                             <Text className="text-gray-600">Total Participants</Text>
                             <Text className="text-xl font-semibold">{contributions.length}</Text>
@@ -410,7 +416,6 @@ const GroupBuySummary = ({ navigation, route }: Props) => {
                     ))}
                 </View>
 
-                {/* Exit GroupBuy Button */}
                 {(!isOwner || isOwner && groupBuy.status === "finished") && (
                     <View className="mt-6">
                         <TouchableOpacity
@@ -421,12 +426,6 @@ const GroupBuySummary = ({ navigation, route }: Props) => {
                         </TouchableOpacity>
                     </View>
                 )}
-
-                <View className="mt-6">
-                    {deal &&
-                        <DealCard deal={deal} />
-                    }
-                </View>
             </View>
         </ScrollView>
     );
