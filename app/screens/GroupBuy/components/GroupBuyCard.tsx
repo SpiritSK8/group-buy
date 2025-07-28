@@ -10,6 +10,7 @@ import { Colors } from '../../../constants/Colors';
 import DealsServices from '../../../services/DealsServices';
 import GroupBuyServices from '../../../services/GroupBuyServices';
 import { useAuth } from '../../../context/AuthContext';
+import { formatTimestamp } from '../../../utils/dates';
 
 type Props = {
     groupBuyID: string;
@@ -22,13 +23,6 @@ const GroupBuyCard = memo(({ groupBuyID, onPress }: Props) => {
     const [groupBuy, setGroupBuy] = useState<GroupBuyDetails | null>(null);
     const [deal, setDeal] = useState<Deal | null>(null);
     const [hasJoined, setHasJoined] = useState(false);
-
-    const [title, setTitle] = useState<string>("Title");
-    const [location, setLocation] = useState<string>("Location");
-    const [endTime, setEndTime] = useState<string>("End Time");
-    const [numParticipants, setNumParticipants] = useState<number>(0);
-    const [total, setTotal] = useState<number>(0);
-    const [target, setTarget] = useState<number>(0);
 
     const [isLoading, setIsLoading] = useState(true);
 
@@ -90,6 +84,11 @@ const GroupBuyCard = memo(({ groupBuyID, onPress }: Props) => {
                         <View className="flex-row items-center mr-4">
                             <Ionicons name="location-outline" size={16} color="#888888" />
                             <Text className="text-gray-500 ml-1">{deal.dealStore}</Text>
+                        </View>
+
+                        <View className="flex-row items-center mr-4">
+                            <Ionicons name="time-outline" size={16} color="#888888" />
+                            <Text className="text-gray-500 ml-1">{formatTimestamp(groupBuy.purchaseDate)}</Text>
                         </View>
                     </View>
 
