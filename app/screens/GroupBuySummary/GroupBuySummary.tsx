@@ -212,7 +212,13 @@ const GroupBuySummary = ({ navigation, route }: Props) => {
                         try {
                             await GroupBuyServices.exitGroupBuy(user.uid, groupBuy.id);
                             Alert.alert("Success", "You have exited the GroupBuy.", [
-                                { text: "OK", onPress: () => navigation.goBack() }
+                                {
+                                    text: "OK",
+                                    onPress: () => {
+                                        navigation.goBack();
+                                        navigation.goBack();
+                                    }
+                                }
                             ]);
                         } catch (error: any) {
                             Alert.alert("Error", error.message);
