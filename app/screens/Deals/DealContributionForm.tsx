@@ -35,7 +35,13 @@ const DealContributionForm = ({ navigation, route }: { navigation: DealContribut
             Alert.alert('Error', 'Please fill in all fields.');
             return;
         }
-        GroupBuyServices.createAndJoinGroupBuy(user.uid, deal.dealID, parseInt(itemsContributed));
+
+        if (purchaseDate < new Date()) {
+            Alert.alert('Error', 'Date of purchase must be in the future.');
+            return;
+        }
+
+        GroupBuyServices.createAndJoinGroupBuy(user.uid, deal.dealID, parseInt(itemsContributed), purchaseDate);
         navigation.goBack();
     };
 
@@ -58,6 +64,7 @@ const DealContributionForm = ({ navigation, route }: { navigation: DealContribut
                     value={purchaseDate}
                     mode="date"
                     display="default"
+                    minimumDate={new Date()}
                     onChange={(_, date) => {
                         setShowDatePicker(false);
                         if (date) setPurchaseDate(date);
