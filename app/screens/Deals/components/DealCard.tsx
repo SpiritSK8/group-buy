@@ -58,7 +58,7 @@ export const DealCard = ({ deal, onPress }: { deal: Deal, onPress?: () => void }
                         Save ${saved.toLocaleString('en-US', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2
-                        })}!
+                        })}
                     </Text>
                 </View>
             </View >
