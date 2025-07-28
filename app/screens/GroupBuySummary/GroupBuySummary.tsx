@@ -273,7 +273,7 @@ const GroupBuySummary = ({ navigation, route }: Props) => {
                         </View>
                     </View>
 
-                    <View className="mb-3 p-2">
+                    <View className="mb-3">
                         {deal &&
                             <DealCard deal={deal} />
                         }
