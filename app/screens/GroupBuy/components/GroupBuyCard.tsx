@@ -91,12 +91,6 @@ const GroupBuyCard = memo(({ groupBuyID, onPress }: Props) => {
                             <Ionicons name="location-outline" size={16} color="#888888" />
                             <Text className="text-gray-500 ml-1">{deal.dealStore}</Text>
                         </View>
-
-                        <View className="flex-row items-center">
-                            <Ionicons name="time-outline" size={16} color="#888888" />
-                            <Text className="text-gray-500 ml-1">{deal.dealExpiry}</Text>
-                        </View>
-
                     </View>
 
                 </View>
