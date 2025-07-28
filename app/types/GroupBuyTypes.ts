@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export type Contribution = {
     userUID: string;
     amount: number;
@@ -11,7 +13,9 @@ export interface GroupBuyDetails {
     ownerUID: string;
     participants: string[];
     contributions: Contribution[];
+    purchaseDate: Timestamp;
     chatRoomID: string;
     status: GroupBuyStatus;
+    createdAt: Timestamp;
 }
 
