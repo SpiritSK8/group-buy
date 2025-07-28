@@ -7,6 +7,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import type { DealStackParamList } from '../../types/Navigations';
 import DealsServices from '../../services/DealsServices';
+import { serverTimestamp } from 'firebase/firestore';
 
 // Navigation prop for this screen
 type NewDealFormNavProp = NativeStackNavigationProp<DealStackParamList, 'NewDealForm'>;
@@ -26,11 +27,13 @@ const NewDealForm: React.FC = () => {
     const [itemOrigPrice, setItemOrigPrice] = useState('');
 
     // Deal type and subtype-specific fields
-    const [dealType, setDealType] = useState<'buyXGetY' | 'minItemPurchase' | 'packageDeal'>('buyXGetY');
+    const [dealType, setDealType] = useState<'buyXGetY' | 'minItemPurchase' | 'packageDeal'>('minItemPurchase');
     const [itemReq, setItemReq] = useState('');
     const [itemFree, setItemFree] = useState('');
-    const [minPurchase, setMinPurchase] = useState('');
-    const [discount, setDiscount] = useState('');
+
+    const [amountPurchased, setAmountPurchased] = useState('');
+    const [discountedPrice, setDiscountedPrice] = useState('');
+
     const [itemQuantityReq, setItemQuantityReq] = useState('');
     const [itemTotalPrice, setItemTotalPrice] = useState('');
 
@@ -58,8 +61,8 @@ const NewDealForm: React.FC = () => {
 
     const handleSubmit = async () => {
         // Validate fields
-        if (!dealName || !startDate || !expiryDate || !dealStore || !dealUrl || !itemName || !itemOrigPrice) {
-            Alert.alert('Error', 'Please fill in all fields, including dates.');
+        if (!dealName || !dealStore || !dealUrl || !itemName || !itemOrigPrice) {
+            Alert.alert('Error', 'Please fill in all fields');
             return;
         }
         const origPrice = parseFloat(itemOrigPrice);
@@ -71,8 +74,8 @@ const NewDealForm: React.FC = () => {
         // Build payload
         const payload: any = {
             dealName,
-            dealStart: startDate.toISOString().split('T')[0],
-            dealExpiry: expiryDate.toISOString().split('T')[0],
+            dealStart: serverTimestamp(),
+            dealExpiry: serverTimestamp(),
             dealStore,
             dealUrl,
             isActive: true,
@@ -92,15 +95,17 @@ const NewDealForm: React.FC = () => {
             payload.itemReq = req;
             payload.itemFree = free;
         } else if (dealType === 'minItemPurchase') {
-            const min = parseInt(minPurchase, 10);
-            const disc = parseFloat(discount);
-            if (isNaN(min) || isNaN(disc)) {
+            const amount = parseInt(amountPurchased, 10);
+            const orig = parseFloat(itemOrigPrice);
+            const disc = parseFloat(discountedPrice);
+            if (isNaN(amount) || isNaN(orig) || isNaN(disc)) {
                 Alert.alert('Error', 'Enter valid numbers for Min Item Purchase');
                 return;
             }
-            payload.minPurchase = min;
-            payload.discount = disc;
-            payload.totalItems = min;
+            payload.minPurchase = amount;
+            payload.discount = 100 * (amount * orig - disc) / (amount * orig);
+            console.log(payload.discount)
+            payload.totalItems = amount;
         } else {
             const qty = parseInt(itemQuantityReq, 10);
             const tot = parseFloat(itemTotalPrice);
@@ -129,8 +134,9 @@ const NewDealForm: React.FC = () => {
         <ScrollView contentContainerStyle={styles.container}>
             {/* Common fields */}
             <Text style={styles.label}>Deal Name</Text>
-            <TextInput style={styles.input} value={dealName} onChangeText={setDealName} />
+            <TextInput style={styles.input} value={dealName} onChangeText={setDealName} placeholder="e.g. Apples buy 3 for $2.40" />
 
+            {/*
             <Text style={styles.label}>Deal Start</Text>
             <Button onPress={() => setShowStartDatePicker(true)} title={startDate ? startDate.toLocaleDateString() : 'Select Start Date'} />
             {showStartDatePicker && (
@@ -153,17 +159,18 @@ const NewDealForm: React.FC = () => {
                     minimumDate={startDate || undefined}
                 />
             )}
+            */}
 
             <Text style={styles.label}>Deal Store</Text>
-            <TextInput style={styles.input} value={dealStore} onChangeText={setDealStore} />
+            <TextInput style={styles.input} value={dealStore} onChangeText={setDealStore} placeholder="e.g. FairPrice" />
 
             <Text style={styles.label}>Deal URL</Text>
             <TextInput style={styles.input} value={dealUrl} onChangeText={setDealUrl} keyboardType="url" autoCapitalize="none" />
 
             <Text style={styles.label}>Item Name</Text>
-            <TextInput style={styles.input} value={itemName} onChangeText={setItemName} />
+            <TextInput style={styles.input} value={itemName} onChangeText={setItemName} placeholder="e.g. Tissue 3 x 120 sheets" />
 
-            <Text style={styles.label}>Item Original Price</Text>
+            <Text style={styles.label}>Original Price (per item)</Text>
             <TextInput
                 style={styles.input}
                 value={itemOrigPrice}
@@ -178,9 +185,7 @@ const NewDealForm: React.FC = () => {
                 onValueChange={(value) => setDealType(value)}
                 style={styles.picker}
             >
-                <Picker.Item label="Buy X Get Y Free" value="buyXGetY" />
-                <Picker.Item label="Min Item Purchase" value="minItemPurchase" />
-                <Picker.Item label="Package Deal" value="packageDeal" />
+                <Picker.Item label="Buy X for Y" value="minItemPurchase" />
             </Picker>
 
             {/* Subtype-specific fields */}
@@ -204,18 +209,18 @@ const NewDealForm: React.FC = () => {
             )}
             {dealType === 'minItemPurchase' && (
                 <>
-                    <Text style={styles.label}>Minimum items to purchase</Text>
+                    <Text style={styles.label}>Amount to purchase</Text>
                     <TextInput
                         style={styles.input}
-                        value={minPurchase}
-                        onChangeText={setMinPurchase}
+                        value={amountPurchased}
+                        onChangeText={setAmountPurchased}
                         keyboardType="number-pad"
                     />
-                    <Text style={styles.label}>Discount (%)</Text>
+                    <Text style={styles.label}>Discounted price (total)</Text>
                     <TextInput
                         style={styles.input}
-                        value={discount}
-                        onChangeText={setDiscount}
+                        value={discountedPrice}
+                        onChangeText={setDiscountedPrice}
                         keyboardType="decimal-pad"
                     />
                 </>
