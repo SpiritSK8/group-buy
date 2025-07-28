@@ -1,4 +1,4 @@
-import { collection, addDoc, serverTimestamp, doc, getDoc, getDocs, query, orderBy, DocumentData, setDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, getDoc, getDocs, query, orderBy, DocumentData, setDoc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore";
 import { database } from "../firebaseConfig";
 import { Deal } from "../types/Deal";
 import { Alert } from "react-native";
@@ -11,7 +11,7 @@ class GroupBuyServices {
      * @param dealID The ID of the deal this GroupBuy is based of.
      * @returns a Promise containing the ID of the created GroupBuy. Returns null if failed.
      */
-    static async createAndJoinGroupBuy(userUID: string, dealID: string, amount: number): Promise<string | null> {
+    static async createAndJoinGroupBuy(userUID: string, dealID: string, amount: number, purchaseDate: Date): Promise<string | null> {
         try {
             const deal = await DealsServices.fetchDeal(dealID);
             if (!deal) {
@@ -26,6 +26,7 @@ class GroupBuyServices {
                 participants: [userUID],
                 contributions: [contribution],
                 status: "active" as const,
+                purchaseDate: Timestamp.fromDate(purchaseDate),
                 createdAt: serverTimestamp()
             };
             const doc = await addDoc(collection(database, "groupBuys"), data);
@@ -99,8 +100,10 @@ class GroupBuyServices {
                 ownerUID: data.ownerUID || data.participants[0], // Fallback for existing data
                 participants: data.participants,
                 contributions: data.contributions,
+                purchaseDate: data.purchaseDate,
                 chatRoomID: data.chatRoomID,
                 status: data.status || "active",
+                createdAt: data.createdAt
             };
         }
         return null;
@@ -123,8 +126,10 @@ class GroupBuyServices {
                     ownerUID: data.ownerUID || data.participants[0], // Fallback for existing data
                     participants: data.participants,
                     contributions: data.contributions,
+                    purchaseDate: data.purchaseDate,
                     chatRoomID: data.chatRoomID,
                     status: data.status || "active",
+                    createdAt: data.createdAt
                 } as GroupBuyDetails;
             })
         );
