@@ -104,7 +104,6 @@ const NewDealForm: React.FC = () => {
             }
             payload.minPurchase = amount;
             payload.discount = 100 * (amount * orig - disc) / (amount * orig);
-            console.log(payload.discount)
             payload.totalItems = amount;
         } else {
             const qty = parseInt(itemQuantityReq, 10);
@@ -168,7 +167,7 @@ const NewDealForm: React.FC = () => {
             <TextInput style={styles.input} value={dealUrl} onChangeText={setDealUrl} keyboardType="url" autoCapitalize="none" />
 
             <Text style={styles.label}>Item Name</Text>
-            <TextInput style={styles.input} value={itemName} onChangeText={setItemName} placeholder="e.g. Tissue 3 x 120 sheets" />
+            <TextInput style={styles.input} value={itemName} onChangeText={setItemName} placeholder="e.g. Carrots 500g" />
 
             <Text style={styles.label}>Original Price (per item)</Text>
             <TextInput
